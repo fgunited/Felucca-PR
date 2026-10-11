@@ -1,11 +1,15 @@
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
 # Combined upstream contribution
 
-The submission is prepared as **one upstream PR containing the complete feature
-list**, from `fgunited/Felucca-PR:upstream/fx-edge-editing` to
-`hugelton/Felucca:main`. No separate feature PRs have been opened.
-The existing [integration draft](https://github.com/fgunited/Felucca-PR/pull/1)
-is internal to this fork. An official upstream PR has not yet been opened.
+The complete feature set has been submitted as **one official upstream PR**:
+[**hugelton/Felucca #234 — Add live parts, playback step recording and editable FX automation**](https://github.com/hugelton/Felucca/pull/234).
+
+Opened on 11 October 2026 after explicit submission authorization and a successful
+FM-1 hardware-test report. The PR is open and ready for review, with maintainers
+allowed to edit the feature branch. It targets `hugelton/Felucca:main` from
+`fgunited/Felucca-PR:upstream/fx-edge-editing`. No separate feature PRs were opened.
+The [internal preparation draft](https://github.com/fgunited/Felucca-PR/pull/1)
+is closed and links to the official PR.
 
 The earlier cumulative branches (live-parts, step-rec, fx-automation,
 sequence-duplicate and fx-edge-editing) are preparation checkpoints. They are
@@ -39,7 +43,7 @@ Development used AI-assisted coding. The maintainer recommends focused changes;
 the author chooses one combined contribution for this coordinated live workflow.
 
 1. Automated validation and the author's FM-1 hardware test are complete.
-2. Submit one upstream PR using the complete integration description after the author's submission instruction.
+2. Official combined PR [#234](https://github.com/hugelton/Felucca/pull/234) is submitted and ready for review.
 3. Use the recorded checks and hardware report for review.
 4. Post the optional [Show and tell draft](SHOW_AND_TELL_DRAFT.md) only if requested.
 5. Keep this preparation-notes branch and `validation/upstream` outside the PR.
@@ -92,6 +96,6 @@ The immutable tag `1.5.1-bonszai-7` identifies main commit
 
 The neutral upstream feature branch remains unchanged and contains the same
 FX code/tests. The author has reported successful hardware validation of the new build.
-The single combined upstream contribution is ready for submission and remains
-available as the internal draft until an explicit submission instruction.
-No official upstream PR or 1.5.2 release is claimed.
+The single combined upstream contribution is submitted as PR #234; the internal
+draft is closed. The official PR head is `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`.
+No official 1.5.2 release is claimed; release versioning remains the maintainer's decision.

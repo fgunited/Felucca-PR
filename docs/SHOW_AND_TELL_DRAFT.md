@@ -20,10 +20,9 @@ The additions are:
 - DUP x2 for steps, locks and automation, with a clean playback transition.
 - Project INIT without rebooting.
 
-The [prepared integration](https://github.com/fgunited/Felucca-PR/pull/1) uses
-neutral Felucca versioning and includes the complete feature list. I intend to
-submit **one combined upstream PR**, with the individual changes explained in
-its description. The earlier feature branches are preparation checkpoints.
+I've submitted [one combined upstream PR, #234](https://github.com/hugelton/Felucca/pull/234),
+with neutral Felucca versioning and the complete feature list explained in its
+description. The earlier feature branches are preparation checkpoints.
 
 Development used AI-assisted coding. The exact source passed the
 full firmware suite and WebAssembly tests; I tested the published Bonszai 7 build on my FM-1 on 11 October 2026 and confirmed
