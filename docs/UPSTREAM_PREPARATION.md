@@ -76,14 +76,21 @@ pair deletion and still needs hardware testing.
 - STEP REC chords, mode switching/disarm, DUP x2 on melodic/drum/odd-length patterns.
 - Project INIT with USB MIDI connected, including cancel and confirm.
 
-Bonszai 7 is prepared on the original fork's `codex/fx-edge-editing` branch.
-[Full firmware checks](https://github.com/fgunited/Felucca/actions/runs/38153266689)
-and [emulator checks](https://github.com/fgunited/Felucca/actions/runs/38153266682)
-passed on `98eb337a6652cae199e4ae9b377ef7af09719a20`.
-The prepared branch head `d3e9bb78e35eaa566271793011e67a72f478c134`
-adds only a README version-label/spacing correction; firmware, tests and release
-workflow are identical to the validated revision. A documentation-only commit
-skipped duplicate CI. Publication must use a fresh main commit without that skip
-marker, so the release workflow can require passing checks for its exact source.
-Updating main would publish the tag, release and installer, and requires explicit
-publication approval. No final hardware validation or official 1.5.2 is claimed.
+Bonszai 7 was published after explicit authorization on 11 October 2026.
+The immutable tag `1.5.1-bonszai-7` identifies main commit
+`2103e6fb669267fb4f2ea0901042a90313ee6f46`.
+
+- [Full main firmware checks](https://github.com/fgunited/Felucca/actions/runs/38154194629): passed.
+- [Main emulator build/tests](https://github.com/fgunited/Felucca/actions/runs/38154194625): passed.
+- [Release and Pages deployment](https://github.com/fgunited/Felucca/actions/runs/38154194622): passed.
+- [Bonszai 7 release](https://github.com/fgunited/Felucca/releases/tag/1.5.1-bonszai-7).
+- [USB installer](https://fgunited.github.io/Felucca/webapp/installer/) and
+  [emulator](https://fgunited.github.io/Felucca/webapp/try/) were checked live:
+  both identify Bonszai 7 and link the published source commit.
+- The public installer firmware's SHA-256 matches the release asset:
+  `2021a98294ddb36f8a191cd8fd5985c7f2a4bf6dfedae110f84d3d9e6efeac0f`.
+
+The neutral upstream feature branch remains unchanged and contains the same
+FX code/tests. Hardware validation of the new editing/deletion is still pending;
+the single upstream contribution remains prepared as an internal draft.
+No official upstream PR or 1.5.2 release is claimed.
