@@ -26,8 +26,8 @@ submit **one combined upstream PR**, with the individual changes explained in
 its description. The earlier feature branches are preparation checkpoints.
 
 Development used AI-assisted coding. The exact source passed the
-full firmware suite and WebAssembly tests; FM-1 testing of the newest FX editing
-and selective deletion is still being completed and documented.
+full firmware suite and WebAssembly tests; I tested the published Bonszai 7 build on my FM-1 on 11 October 2026 and confirmed
+that everything works, including the latest workflow with selective FX deletion.
 
 I read the guidance in discussion #60 and the update about Felucca's next phase.
 I understand the preference for focused changes and am presenting these together

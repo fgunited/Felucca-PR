@@ -38,9 +38,9 @@ AI-assisted contributions with explanation, tests and real FM-1 validation.
 Development used AI-assisted coding. The maintainer recommends focused changes;
 the author chooses one combined contribution for this coordinated live workflow.
 
-1. Validate the combined branch and record the remaining FM-1 checks below.
-2. Open one upstream draft PR using the complete integration description.
-3. Mark it ready when hardware testing is documented.
+1. Automated validation and the author's FM-1 hardware test are complete.
+2. Submit one upstream PR using the complete integration description after the author's submission instruction.
+3. Use the recorded checks and hardware report for review.
 4. Post the optional [Show and tell draft](SHOW_AND_TELL_DRAFT.md) only if requested.
 5. Keep this preparation-notes branch and `validation/upstream` outside the PR.
 
@@ -63,18 +63,18 @@ fine phase and wraparound, rather than original take identity. For ON 3, ON 5,
 OFF 7, deleting OFF 7 removes ON 5 and leaves ON 3. Rows outside LEN are deleted
 alone. Unfinished captures block edits on their track before undo is replaced.
 
-## Hardware checks to document
+## Hardware validation
 
-The user reports testing Bonszai 5 on the FM-1. Bonszai 6 testing found the old
-whole-effect deletion behavior; the latest change replaces it with selective
-pair deletion and still needs hardware testing.
+On 11 October 2026 at 18:25 Europe/Berlin, the author reported
+**"Funktioniert alles"** after installing/testing the published Bonszai 7 build
+on the FM-1. This completes the requested hardware-testing gate.
+Bonszai 5 had previously been reported as tested; Bonszai 6 testing led to the
+selective-deletion change now included in Bonszai 7.
 
-- Multiple takes of one FX: delete ON and OFF; verify other takes remain and one undo restores both.
-- Same-step fine positions, loop-crossing pairs, repeated ON and orphan edges.
-- Edit/delete during playback; verify timing, manual hold/latch, notes and external USB/TRS clock.
-- Save A–D during playback, launch at the boundary, STOP and verify persistence after restart.
-- STEP REC chords, mode switching/disarm, DUP x2 on melodic/drum/odd-length patterns.
-- Project INIT with USB MIDI connected, including cancel and confirm.
+This records the author's overall success report. No separate measurements or
+individual checklist results are inferred. Automated regression cases cover
+multiple takes of one FX, both deletion directions, fine timing, loop boundaries,
+repeated/orphan edges, undo/redo, capture guards and live playback state.
 
 Bonszai 7 was published after explicit authorization on 11 October 2026.
 The immutable tag `1.5.1-bonszai-7` identifies main commit
@@ -91,6 +91,7 @@ The immutable tag `1.5.1-bonszai-7` identifies main commit
   `2021a98294ddb36f8a191cd8fd5985c7f2a4bf6dfedae110f84d3d9e6efeac0f`.
 
 The neutral upstream feature branch remains unchanged and contains the same
-FX code/tests. Hardware validation of the new editing/deletion is still pending;
-the single upstream contribution remains prepared as an internal draft.
+FX code/tests. The author has reported successful hardware validation of the new build.
+The single combined upstream contribution is ready for submission and remains
+available as the internal draft until an explicit submission instruction.
 No official upstream PR or 1.5.2 release is claimed.
