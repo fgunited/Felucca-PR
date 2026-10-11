@@ -1,0 +1,70 @@
+name: Validate upstream emulator
+
+on:
+  push:
+    branches: [validation/upstream]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: felucca-pr-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install Python dependencies
+        run: python -m pip install Pillow fonttools
+      - name: Generate assets without the hardware SDK
+        run: python -c 'import sys; sys.path.insert(0, "tools"); import build; build.generate()'
+      - name: Test live patterns and MIDI clock
+        run: |
+          mkdir -p build/host
+          cc -O2 -w -Ibuild/gen -Ifirmware/src -o build/host/live_pattern_test tests/live_pattern_test.c -lm
+          build/host/live_pattern_test
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/step_play_test tests/step_play_test.c -lm
+          build/host/step_play_test
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/persistence_test tests/persistence_test.c -lm
+          build/host/persistence_test
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/midi_control_test tests/midi_control_test.c -lm
+          build/host/midi_control_test
+          cc -O2 -w -Ibuild/gen -Ifirmware/src -o build/host/ui_test tests/ui_test.c -lm
+          build/host/ui_test
+      - name: Test FX-special automation
+        run: |
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/fx_motion_test tests/fx_motion_test.c -lm
+          build/host/fx_motion_test
+      - name: Test FX edge editing
+        run: |
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/fx_edit_test tests/fx_edit_test.c -lm
+          build/host/fx_edit_test
+      - name: Test sequence duplication
+        run: |
+          cc -O1 -w -Ibuild/gen -Ifirmware/src -o build/host/duplicate_test tests/duplicate_test.c -lm
+          build/host/duplicate_test
+      - name: Install Emscripten and build the emulator
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          "$RUNNER_TEMP/emsdk/emsdk" install latest
+          "$RUNNER_TEMP/emsdk/emsdk" activate latest
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          emcc --version
+          sh web/emu/build.sh
+          node web/emu/emu_test.mjs build/emu/felucca.wasm
+      - name: Upload preview for local testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: felucca-pr-emulator-a1216c8a6c3d
+          path: build/emu/
+          if-no-files-found: error
