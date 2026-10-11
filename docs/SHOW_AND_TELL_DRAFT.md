@@ -30,7 +30,7 @@ that everything works, including the latest workflow with selective FX deletion.
 
 I read the guidance in discussion #60 and the update about Felucca's next phase.
 I understand the preference for focused changes and am presenting these together
-as a coordinated live workflow, with tests and user guides for review.
+as a coordinated live workflow, with tests and README documentation for review.
 
 [bonszaimusic on YouTube](https://www.youtube.com/@bonszaimusic) ·
 [fgunited on GitHub](https://github.com/fgunited)

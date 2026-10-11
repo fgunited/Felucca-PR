@@ -29,7 +29,8 @@ not a submission series. Project INIT belongs to this combined contribution.
 
 README uses Unreleased; firmware retains upstream v1.5.1. The maintainer chooses
 a release number. Fork branding, release/Pages workflows and CI-only validation
-files are excluded from the feature diff. User guides are under docs/.
+files are excluded from the feature diff. Feature instructions are included in
+the existing README; docs/ retains only the upstream image files.
 Credit remains in README > Credits > Contributions as
 [bonszaimusic](https://www.youtube.com/@bonszaimusic) /
 [fgunited](https://github.com/fgunited).
@@ -50,9 +51,11 @@ the author chooses one combined contribution for this coordinated live workflow.
 
 ## Exact-revision validation
 
-Latest feature commit: `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`.
-Validation workflows explicitly check out that source; workflow files live only
-on `validation/upstream`.
+Latest feature commit: `c821902e9b5210b6f5bb0a6a1ea694a9aa53cc60`.
+The latest follow-up changes documentation only. Validation workflows explicitly
+check out tested firmware commit `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`;
+workflow files live only on `validation/upstream`. Firmware, tests, web and build
+sources are unchanged from that validated revision.
 
 - [Full firmware build and tests/run_tests.sh](https://github.com/fgunited/Felucca-PR/actions/runs/38153066247): passed, including the target build, full host suite, ASan/UBSan/fuzz tests, UI layouts and target budgets.
 - [WebAssembly build and tests](https://github.com/fgunited/Felucca-PR/actions/runs/38153066252): passed.
@@ -97,5 +100,13 @@ The immutable tag `1.5.1-bonszai-7` identifies main commit
 The neutral upstream feature branch remains unchanged and contains the same
 FX code/tests. The author has reported successful hardware validation of the new build.
 The single combined upstream contribution is submitted as PR #234; the internal
-draft is closed. The official PR head is `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`.
+draft is closed. The official PR head is `c821902e9b5210b6f5bb0a6a1ea694a9aa53cc60`.
 No official 1.5.2 release is claimed; release versioning remains the maintainer's decision.
+
+## Documentation layout
+
+The three added standalone guides were removed from the feature branch on
+11 October 2026 to follow upstream's existing structure. README retains all
+nine feature descriptions, usage gestures and key FX compatibility/deletion
+semantics. No guide links remain. The PR diff contains 34 files; the final
+follow-up changes only README and removes the three guides.
