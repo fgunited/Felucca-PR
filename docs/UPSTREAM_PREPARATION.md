@@ -50,10 +50,12 @@ Latest feature commit: `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`.
 Validation workflows explicitly check out that source; workflow files live only
 on `validation/upstream`.
 
-- [Full firmware build and tests/run_tests.sh](https://github.com/fgunited/Felucca-PR/actions/runs/38153066247): running.
+- [Full firmware build and tests/run_tests.sh](https://github.com/fgunited/Felucca-PR/actions/runs/38153066247): passed, including the target build, full host suite, ASan/UBSan/fuzz tests, UI layouts and target budgets.
 - [WebAssembly build and tests](https://github.com/fgunited/Felucca-PR/actions/runs/38153066252): passed.
 - Local FX editing/deletion, FX recording, UI, DUP x2, persistence, motion and project tests: passed.
 - Local ASan/UBSan FX tests: passed with LeakSanitizer disabled because /proc task data is inaccessible in this workspace. CI uses the normal sanitizer suite.
+- Firmware artifact: `felucca-pr-b192936ff5ce` (967004-byte zip).
+- Emulator artifact: `felucca-pr-emulator-b192936ff5ce` (402067-byte zip).
 - Earlier source `a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226` passed the full firmware and WebAssembly suites; it did not include selective deletion.
 
 Selective deletion chooses chronological neighbours in the active loop, including
@@ -75,5 +77,13 @@ pair deletion and still needs hardware testing.
 - Project INIT with USB MIDI connected, including cancel and confirm.
 
 Bonszai 7 is prepared on the original fork's `codex/fx-edge-editing` branch.
+[Full firmware checks](https://github.com/fgunited/Felucca/actions/runs/38153266689)
+and [emulator checks](https://github.com/fgunited/Felucca/actions/runs/38153266682)
+passed on `98eb337a6652cae199e4ae9b377ef7af09719a20`.
+The prepared branch head `d3e9bb78e35eaa566271793011e67a72f478c134`
+adds only a README version-label/spacing correction; firmware, tests and release
+workflow are identical to the validated revision. A documentation-only commit
+skipped duplicate CI. Publication must use a fresh main commit without that skip
+marker, so the release workflow can require passing checks for its exact source.
 Updating main would publish the tag, release and installer, and requires explicit
 publication approval. No final hardware validation or official 1.5.2 is claimed.

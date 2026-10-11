@@ -25,7 +25,7 @@ neutral Felucca versioning and includes the complete feature list. I intend to
 submit **one combined upstream PR**, with the individual changes explained in
 its description. The earlier feature branches are preparation checkpoints.
 
-Development used AI-assisted coding. The exact source is being checked with the
+Development used AI-assisted coding. The exact source passed the
 full firmware suite and WebAssembly tests; FM-1 testing of the newest FX editing
 and selective deletion is still being completed and documented.
 
