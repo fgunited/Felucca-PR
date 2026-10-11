@@ -21,9 +21,9 @@ The additions are:
 
 I've prepared the code in [fgunited/Felucca-PR](https://github.com/fgunited/Felucca-PR/tree/upstream/fx-edge-editing),
 based on current upstream main, with neutral Felucca versioning and documentation.
-Development used AI-assisted coding. Automated tests cover the additions;
-final FM-1 listening/timing checks and the exact submission build still need to
-be completed and documented before a review-ready PR.
+Development used AI-assisted coding. The complete firmware build/test suite and the WebAssembly build/tests pass
+for the prepared commit. Final FM-1 listening/timing checks for the FX edge
+editing are still being completed and documented before a review-ready PR.
 
 I saw the guidance in discussion #60 and the update about Felucca's next phase.
 If any of these changes fit mainline, I'd be happy to contribute them as small,
