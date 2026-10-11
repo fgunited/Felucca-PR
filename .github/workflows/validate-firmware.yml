@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226
+          ref: b192936ff5ce1c30f2dedf2b010d4cacd40a2186
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
@@ -34,11 +34,11 @@ jobs:
           export AC79_SDK="$RUNNER_TEMP/ac79-sdk"
           sh build.sh
           sh tests/run_tests.sh
-          printf '%s\\n' 'a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226' > build/SOURCE_COMMIT.txt
+          printf '%s\n' 'b192936ff5ce1c30f2dedf2b010d4cacd40a2186' > build/SOURCE_COMMIT.txt
       - name: Upload installable firmware and licenses
         uses: actions/upload-artifact@v4
         with:
-          name: felucca-pr-a1216c8a6c3d
+          name: felucca-pr-b192936ff5ce
           if-no-files-found: error
           path: |
             build/SOURCE_COMMIT.txt
