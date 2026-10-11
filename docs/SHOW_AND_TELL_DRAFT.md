@@ -10,26 +10,28 @@ The goal is to build and vary parts while the music keeps playing.
 
 The additions are:
 
-- Live switching between A–D at track 1's loop boundary, keeping the current sounds and tempo.
-- Saving separate parts during playback, with RAM snapshots committed automatically after STOP.
+- Live A–D switching at track 1's loop boundary, keeping sounds and tempo.
+- Saving parts during playback as RAM snapshots, committed after STOP.
 - STEP REC at an independent cursor while the sequencer continues.
-- Recording the fourteen FX-special keys with their press/release timing.
+- Recording all fourteen FX-special keys with fine press/release timing.
 - A project setting for the track that owns global FX automation.
-- Independent step/fine-position editing of FX ON and OFF to change start and duration.
-- DUP x2 for a track's steps, parameter locks and automation, including a clean transition during playback.
+- Independent FX ON/OFF step/fine editing for start and duration.
+- Selective deletion of an FX ON + next OFF, or OFF + previous ON, including across the loop; one undo restores both.
+- DUP x2 for steps, locks and automation, with a clean playback transition.
 - Project INIT without rebooting.
 
-I've prepared the code in [fgunited/Felucca-PR](https://github.com/fgunited/Felucca-PR/tree/upstream/fx-edge-editing),
-based on current upstream main, with neutral Felucca versioning and documentation.
-Development used AI-assisted coding. The complete firmware build/test suite and the WebAssembly build/tests pass
-for the prepared commit. Final FM-1 listening/timing checks for the FX edge
-editing are still being completed and documented before a review-ready PR.
+The [prepared integration](https://github.com/fgunited/Felucca-PR/pull/1) uses
+neutral Felucca versioning and includes the complete feature list. I intend to
+submit **one combined upstream PR**, with the individual changes explained in
+its description. The earlier feature branches are preparation checkpoints.
 
-I saw the guidance in discussion #60 and the update about Felucca's next phase.
-If any of these changes fit mainline, I'd be happy to contribute them as small,
-focused PRs, starting with live parts. The combined branch is an overview.
+Development used AI-assisted coding. The exact source is being checked with the
+full firmware suite and WebAssembly tests; FM-1 testing of the newest FX editing
+and selective deletion is still being completed and documented.
 
-Which additions would be useful to consider first?
+I read the guidance in discussion #60 and the update about Felucca's next phase.
+I understand the preference for focused changes and am presenting these together
+as a coordinated live workflow, with tests and user guides for review.
 
 [bonszaimusic on YouTube](https://www.youtube.com/@bonszaimusic) ·
 [fgunited on GitHub](https://github.com/fgunited)

@@ -1,103 +1,79 @@
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
-# Upstream preparation
+# Combined upstream contribution
 
-This branch contains preparation notes only. Feature branches remain based on
-hugelton/Felucca main at `ef1f561b6b105f20350f6b1eac0dc0789a357f00`.
-They are a cumulative stack, not five independent PRs against main.
+The submission is prepared as **one upstream PR containing the complete feature
+list**, from `fgunited/Felucca-PR:upstream/fx-edge-editing` to
+`hugelton/Felucca:main`. No separate feature PRs have been opened.
+The existing [integration draft](https://github.com/fgunited/Felucca-PR/pull/1)
+is internal to this fork. An official upstream PR has not yet been opened.
 
-| Stage | Branch | Base for reviewing this stage |
-| --- | --- | --- |
-| Live launches and RAM saves | [upstream/live-parts](https://github.com/fgunited/Felucca-PR/tree/upstream/live-parts) | main |
-| STEP REC during playback | [upstream/step-rec](https://github.com/fgunited/Felucca-PR/tree/upstream/step-rec) | upstream/live-parts |
-| FX recording, owner track and project controls | [upstream/fx-automation](https://github.com/fgunited/Felucca-PR/tree/upstream/fx-automation) | upstream/step-rec |
-| DUP x2 | [upstream/sequence-duplicate](https://github.com/fgunited/Felucca-PR/tree/upstream/sequence-duplicate) | upstream/fx-automation |
-| Independent FX edge editing | [upstream/fx-edge-editing](https://github.com/fgunited/Felucca-PR/tree/upstream/fx-edge-editing) | upstream/sequence-duplicate |
+The earlier cumulative branches (live-parts, step-rec, fx-automation,
+sequence-duplicate and fx-edge-editing) are preparation checkpoints. They are
+not a submission series. Project INIT belongs to this combined contribution.
 
-The last branch is the complete integration reference. Its diff contains five
-feature commits, 37 files, firmware changes, tests and user documentation.
-It excludes fork release/Pages workflows and build-tool changes. The firmware
-version remains upstream's v1.5.1; the maintainer chooses any release version.
-README uses an Unreleased section. Detailed guides live in docs/.
+## Complete feature list
 
+- Live A–D launches at track 1's loop boundary, retaining sounds, tempo and clock.
+- Save parts during playback/recording as RAM snapshots, committed after STOP.
+- STEP REC at an independent cursor during playback, switching to LIVE REC.
+- Capture/replay all fourteen FX specials with fine press/release timing, latch and cross-loop holds.
+- Project-level global FX TRACK T1–T4.
+- Independent FX ON/OFF step and fine-position editing for start and duration.
+- Delete one chronological FX pair: ON + next OFF, or OFF + previous ON; one undo restores both.
+- DUP x2 for steps, parameter locks and automation, up to 64 steps, with a clean playback transition.
+- Project INIT without rebooting.
+
+README uses Unreleased; firmware retains upstream v1.5.1. The maintainer chooses
+a release number. Fork branding, release/Pages workflows and CI-only validation
+files are excluded from the feature diff. User guides are under docs/.
 Credit remains in README > Credits > Contributions as
 [bonszaimusic](https://www.youtube.com/@bonszaimusic) /
-[fgunited](https://github.com/fgunited), naming the contributed features.
+[fgunited](https://github.com/fgunited).
 
-## Submission approach
+## Submission and review
 
 [CONTRIBUTING](https://github.com/hugelton/Felucca/blob/main/CONTRIBUTING.md)
-and [Discussion #60](https://github.com/hugelton/Felucca/discussions/60)
-welcome AI-assisted contributions, provided they are focused, understood,
-tested on a real FM-1, and checked with tests/run_tests.sh.
-[Show and tell](https://github.com/hugelton/Felucca/discussions/categories/show-and-tell)
-is the recommended place to introduce forks, mods and demos.
-[Discussion #230](https://github.com/hugelton/Felucca/discussions/230)
-explains the maintainer's reduced pace of feature development.
+and [discussion #60](https://github.com/hugelton/Felucca/discussions/60) welcome
+AI-assisted contributions with explanation, tests and real FM-1 validation.
+Development used AI-assisted coding. The maintainer recommends focused changes;
+the author chooses one combined contribution for this coordinated live workflow.
 
-1. Review the integration draft in this fork.
-2. Complete and record the remaining hardware checks below.
-3. Post the prepared Show and tell text if desired, asking which changes fit mainline.
-4. Start with the live-parts PR. Submit further changes separately after agreeing scope.
-   The FX stage currently also contains project INIT: isolate INIT into its own
-   focused PR before sending that stage upstream. These are preparation branches,
-   not a promise to submit the combined integration diff.
-5. Rebase each accepted next stage on the actual updated upstream main.
-   Do not merge this preparation-notes branch into a feature PR.
+1. Validate the combined branch and record the remaining FM-1 checks below.
+2. Open one upstream draft PR using the complete integration description.
+3. Mark it ready when hardware testing is documented.
+4. Post the optional [Show and tell draft](SHOW_AND_TELL_DRAFT.md) only if requested.
+5. Keep this preparation-notes branch and `validation/upstream` outside the PR.
 
-## Validation evidence
+## Exact-revision validation
 
-On 11 October 2026, 22 host test invocations passed on the five prepared source
-stages, built with regenerated headers and the real repository sample assets:
+Latest feature commit: `b192936ff5ce1c30f2dedf2b010d4cacd40a2186`.
+Validation workflows explicitly check out that source; workflow files live only
+on `validation/upstream`.
 
-- live parts: live_pattern_test, persistence_test, ui_test;
-- STEP REC: live_pattern_test, step_play_test, ui_test;
-- FX controls: fx_motion_test, editor_test, persistence_test, ui_test;
-- DUP x2: duplicate_test, ui_test;
-- complete integration: live_pattern_test, step_play_test, fx_motion_test,
-  duplicate_test, fx_edit_test, motion_test, project_test, persistence_test,
-  editor_test, ui_test.
+- [Full firmware build and tests/run_tests.sh](https://github.com/fgunited/Felucca-PR/actions/runs/38153066247): running.
+- [WebAssembly build and tests](https://github.com/fgunited/Felucca-PR/actions/runs/38153066252): passed.
+- Local FX editing/deletion, FX recording, UI, DUP x2, persistence, motion and project tests: passed.
+- Local ASan/UBSan FX tests: passed with LeakSanitizer disabled because /proc task data is inaccessible in this workspace. CI uses the normal sanitizer suite.
+- Earlier source `a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226` passed the full firmware and WebAssembly suites; it did not include selective deletion.
 
-The final firmware/test/emulator sources match the previously tested Bonszai 6
-implementation except the version string, branding comments and trailing blank
-lines. Its earlier complete GitHub firmware checks, sanitizers, WebAssembly
-tests and target budget checks passed on
-[1705498](https://github.com/fgunited/Felucca/commit/1705498662d426d8fb5663e334d7250ef1215461).
-This is previous-implementation evidence, not a claim that the complete target
-build or tests/run_tests.sh ran on this new fork. The exact prepared commit was subsequently validated successfully as recorded below.
+Selective deletion chooses chronological neighbours in the active loop, including
+fine phase and wraparound, rather than original take identity. For ON 3, ON 5,
+OFF 7, deleting OFF 7 removes ON 5 and leaves ON 3. Rows outside LEN are deleted
+alone. Unfinished captures block edits on their track before undo is replaced.
 
-New C test files carry GPL-3.0-only SPDX headers; new guide files use the same
-identifier in an HTML comment.
+## Hardware checks to document
 
-## Exact PR validation completed
+The user reports testing Bonszai 5 on the FM-1. Bonszai 6 testing found the old
+whole-effect deletion behavior; the latest change replaces it with selective
+pair deletion and still needs hardware testing.
 
-Both validation workflows completed successfully on 11 October 2026.
-They live only on `validation/upstream` and explicitly check out the feature
-commit `a1216c8a6c3d36e99edf6e42a93f5f0fef4e5226`.
+- Multiple takes of one FX: delete ON and OFF; verify other takes remain and one undo restores both.
+- Same-step fine positions, loop-crossing pairs, repeated ON and orphan edges.
+- Edit/delete during playback; verify timing, manual hold/latch, notes and external USB/TRS clock.
+- Save A–D during playback, launch at the boundary, STOP and verify persistence after restart.
+- STEP REC chords, mode switching/disarm, DUP x2 on melodic/drum/odd-length patterns.
+- Project INIT with USB MIDI connected, including cancel and confirm.
 
-- [Firmware build and complete tests/run_tests.sh](https://github.com/fgunited/Felucca-PR/actions/runs/38150874011):
-  installable package built, ALL HOST TESTS PASSED, sanitizers/fuzz tests,
-  UI renders, regressions and target budgets passed.
-- [WebAssembly emulator build and tests](https://github.com/fgunited/Felucca-PR/actions/runs/38150873998):
-  all host feature checks and emulator tests passed.
-- Firmware artifact: `felucca-pr-a1216c8a6c3d` (966485-byte zip).
-- Emulator artifact: `felucca-pr-emulator-a1216c8a6c3d` (401837-byte zip).
-
-The PR branch and its diff retain no workflow files.
-The user reports having tested Bonszai 5 on the FM-1; Bonszai 6 testing is
-in progress. One observation confirms the documented current behavior:
-EDIT on an FX row deletes every ON/OFF event for that effect on the selected
-track. A more selective deletion action would be a separate change; it is
-not included in this tested commit.
-
-## Hardware checks still to document
-
-- Save A–D during playback, launch them at track 1's boundary, then STOP and
-  confirm the flash commits survive a restart.
-- Enter chords with STEP REC while playback continues; switch to LIVE REC and disarm.
-- Record short FX taps, latch and loop-crossing holds on the configured FX track,
-  then change tracks, replay, move ON/OFF edges and test undo.
-- Test DUP x2 on melodic/drum tracks, odd lengths and a running loop.
-- Test project INIT while USB MIDI is connected, including cancel and confirm.
-- Check external USB/TRS clock, audible timing, stuck notes/FX and playback continuity.
-
-No final hardware validation or official 1.5.2 release is claimed.
+Bonszai 7 is prepared on the original fork's `codex/fx-edge-editing` branch.
+Updating main would publish the tag, release and installer, and requires explicit
+publication approval. No final hardware validation or official 1.5.2 is claimed.
