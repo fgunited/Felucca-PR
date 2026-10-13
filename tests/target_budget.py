@@ -65,9 +65,16 @@ def functions(path):
     return out
 
 
-def cost(insns):
+FORMULA_CORES = {"lofi_byte", "lofi_float"}
+
+
+def cost(insns, formula_core=False):
     """loops: one span per loop head (the farthest backward branch to it); an instruction inside d
     spans weighs NEST ** (d - 1) (an inner loop runs several times per pass of the outer one)"""
+    if formula_core:
+        # Called per sample: check the complete emitted formula switch, including
+        # straight-line cases that the renderer loop metric otherwise omits.
+        return {"insns": len(insns), "loop": 0, "div": 0, "call": 0, "cost": len(insns)}
     lo = insns[0][0]
     heads = {}
     for a, t in insns:
@@ -96,7 +103,7 @@ def main():
         print(f"target: skip ({dis} missing: run ./build.sh)")
         return 0
     fns = functions(dis)
-    res = {n: cost(fns[n]) for n in FUNCS if fns.get(n)}
+    res = {n: cost(fns[n], n in FORMULA_CORES) for n in FUNCS if fns.get(n)}
     missing = [n for n in FUNCS if n not in res and n not in OPTIONAL]
     base = {}
     if os.path.exists(budget):
