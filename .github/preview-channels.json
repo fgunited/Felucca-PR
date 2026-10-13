@@ -20,15 +20,6 @@
       "ref": "1727537624390cc3f9c7dff2456b43b3a8edb005",
       "path": "upstream",
       "aliases": []
-    },
-    {
-      "id": "bytebeat",
-      "title": "LOFI BYTE/FLOAT – einzelner Sound-Port",
-      "description": "Upstream 1.6 mit BYTE und FLOAT als zusätzliche LOFI-Wellen, je 32 Formeln und zwei neuen Presets. Bestehende Wellen und Speicherformate bleiben erhalten. EDIT > CHIP: WAVE = BYTE oder FLOAT; ALGO wählt die Formel.",
-      "kind": "PR PRECHECK · HARDWARETEST AUSSTEHEND",
-      "ref": "9ce1bf1325dc2d15d53affdd07acce20ef12835f",
-      "path": "features/bytebeat",
-      "aliases": []
     }
   ]
 }

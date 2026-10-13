@@ -34,101 +34,83 @@ The web editor and installer live in [Felucca-WebApp](https://github.com/hugelto
 
 ## Bonszai development and upstream contributions
 
-This section applies to the infrastructure branches of the FGUnited repositories. It must not
-be copied into an upstream feature PR. The user requested this workflow on 13 October 2026.
+Repository roles were clarified by the user on 13 October 2026: **Custom is the default
+home for new features and experiments. Felucca-PR is reserved for explicitly selected
+official upstream contributions.** General preparation does not select a feature for upstream.
 
 | Repository / branch | Purpose |
 | --- | --- |
-| `fgunited/Felucca-PR:main` | Exact upstream base, initially Felucca 1.6 at `1727537624390cc3f9c7dff2456b43b3a8edb005`; update by fast-forward when possible. |
-| `fgunited/Felucca-PR:upstream/<feature>` | One independently reviewable feature, branched from the upstream base. |
-| `fgunited/Felucca-PR:precheck` | Preview controller, channel manifest, publication code and this procedure. |
-| `fgunited/Felucca:custom-next` | Complete integration build: existing Bonszai additions plus selected new features. |
-| `fgunited/Felucca:main` | Released complete Custom firmware. Promotion is a separate, explicit release step. |
-| `gh-pages` in each repository | Generated persistent site state; never merge it into firmware or PR branches. |
+| `fgunited/Felucca:feature/<feature>` | Develop and test an isolated Custom feature or experiment. |
+| `fgunited/Felucca:custom-next` | Complete integration of Bonszai and new Custom features, with its own installer/emulator/editor. |
+| `fgunited/Felucca:main` | Released complete Custom firmware; promotion is a separate explicit release step. |
+| `fgunited/Felucca:upstream-base/1.6` | Exact upstream 1.6 source tree for independent experiments and later extraction. |
+| `fgunited/Felucca-PR:main` | Clean upstream base, currently `1727537624390cc3f9c7dff2456b43b3a8edb005`. |
+| `fgunited/Felucca-PR:upstream/<feature>` | One feature explicitly selected for an official upstream PR, with only its code/tests/docs. |
+| `fgunited/Felucca-PR:precheck` | Installer/emulator/editor controller for selected PR preparations and the upstream comparison. |
+| `gh-pages` in each repository | Generated site state; never merge it into firmware or feature branches. |
 
-### Feature development
+### Default feature workflow
 
-1. Check current upstream, repository state and this procedure before changing firmware. Keep
-   existing test candidates and the released Custom version available.
-2. Start `upstream/<feature>` from the exact current upstream commit. Develop each feature once
-   here, with focused tests, compatible defaults and documentation in the existing README,
-   CREDITS or manual structure. Preserve original JIANT/Felucca attribution and GPL notices.
-3. Existing feature branches and their open PRs are not rebased or force-pushed silently.
-   Independent features start from upstream; unavoidable dependencies must be listed and
-   introduced with a separate prerequisite PR or an explicitly stacked branch.
-4. Register the feature's **full 40-character commit SHA** in
-   `.github/preview-channels.json` on `precheck`. Add a unique id, title, description and
-   `features/<feature>` path. Updating the manifest and pushing `precheck` triggers builds
-   and tests. A moving source branch name is deliberately rejected.
-5. Merge the same feature branch into `custom-next`; apply combination-specific fixes there.
-   Do not reimplement the feature independently. Feed review changes back into both builds.
-6. Run the existing complete firmware suite and relevant new tests. Add combination checks for
-   automation, MIDI Learn, parameter locks, engine changes, project/preset round trips, external
-   clock and worst-case multi-track FX load as appropriate. Do not overwrite unrelated golden
-   renders or raise CPU budgets just to make tests pass.
-7. Publish the isolated feature candidate and the complete Custom candidate. Perform the
-   user's browser and FM-1 checks before upstream submission or Custom release. Automatic
-   checks and browser performance do not establish FM-1 hardware stability.
-8. Create one upstream PR per feature. The diff contains only feature code, tests and relevant
-   documentation: no fork branding, site controller, channel manifest or release workflows.
-   Web editor changes needing the official editor belong in `hugelton/Felucca-WebApp`.
-9. On upstream acceptance, sync the upstream base and reconcile the Custom integration using
-   the actual merge commit; avoid applying an accepted feature a second time.
+1. Inspect current upstream, Custom state and this procedure. Keep released firmware and
+   existing selected PR preparations available.
+2. Develop a new feature on `fgunited/Felucca:feature/<feature>`; use a suitable verified base
+   and focused commits so its patch can later be extracted independently. A JIANT experiment
+   does not start in Felucca-PR merely because it might eventually be contributable.
+3. Preserve original attribution/GPL notices and defaults. Test sound behavior, parameter
+   locks/automation, engine changes and project/user-preset compatibility as relevant.
+4. Integrate the same patch into `custom-next`, with combination fixes in that integration
+   branch. Register an isolated experiment under `features/<feature>` in the **Custom repo's**
+   manifest if useful. The full Custom preview stays at `custom-next/`.
+5. Build/test before publishing. Every preview has firmware, USB installer, emulator and
+   matching editor built from one exact source SHA. Record hardware results separately.
+6. **Only after the user explicitly selects that feature for an official upstream contribution**,
+   extract its focused commits onto the clean upstream base in Felucca-PR. List unavoidable
+   dependencies; exclude Bonszai branding, unrelated features, deployment infrastructure and
+   channel manifests from the feature diff.
+7. Register that selected PR-preparation SHA in Felucca-PR's manifest. Its isolated
+   installer/emulator/editor supports review and hardware testing before submission. Preserve
+   existing feature branches/PRs; do not silently rebase or force-push them.
+8. Submit one official upstream PR per selected feature only after the agreed review and
+   hardware checks. Official editor changes belong in `hugelton/Felucca-WebApp`.
+9. Keep review fixes in Custom and the selected PR candidate in sync. After upstream acceptance,
+   sync the upstream base and reconcile against the actual accepted commit to avoid duplication.
 
-### Preview and release channels
+### Channels and publication
 
-Each successful channel contains its matching firmware, USB installer, web editor and browser
-emulator, built from one pinned source commit. Every page displays its channel and source SHA;
-`build-info.json` and `SHA256SUMS` identify the artifacts. Emulator storage is isolated per source
-commit so incompatible preview projects do not leak between builds. Browser saves from the
-previous shared emulator storage remain there; they are not migrated or erased automatically.
+| Preview | URL |
+| --- | --- |
+| Stable complete Custom | `https://fgunited.github.io/Felucca/` |
+| Complete Custom development version | `https://fgunited.github.io/Felucca/custom-next/` |
+| Isolated Custom experiments | `https://fgunited.github.io/Felucca/features/<feature>/` |
+| Selected official PR preparation | `https://fgunited.github.io/Felucca-PR/` (currently playback step recording) |
+| Additional selected official PR preparations | `https://fgunited.github.io/Felucca-PR/features/<feature>/` |
+| Unchanged upstream comparison | `https://fgunited.github.io/Felucca-PR/upstream/` |
 
-- PR precheck: `https://fgunited.github.io/Felucca-PR/` (currently the step-recording candidate).
-- Independent PR previews: `https://fgunited.github.io/Felucca-PR/features/<feature>/`.
-- Upstream comparison: `https://fgunited.github.io/Felucca-PR/upstream/`.
-- Complete released Custom reference: `https://fgunited.github.io/Felucca/`.
-- Complete integration preview: `https://fgunited.github.io/Felucca/custom-next/`.
-- Every channel has `webapp/try/`, `webapp/editor/`, `webapp/installer/` and `firmware/`.
-- Exact build snapshots are retained at `builds/<channel-id>/<source-sha>/`. Other feature pages
-  and previous snapshots survive later publications. Repository Actions artifacts are an
-  additional download, not the permanent archive.
+Each channel has `webapp/installer/`, `webapp/try/`, `webapp/editor/`, `firmware/`,
+`build-info.json` and `SHA256SUMS`. Headers show channel and source SHA. Emulator storage
+is isolated per repository/channel/source SHA. Published snapshots remain under
+`builds/<channel-id>/<source-sha>/`; other channels are preserved. A failed complete build
+publishes nothing. Source refs are full commit SHAs; only the full Custom channel uses
+`@workflow`. Stable Bonszai 7 remains pinned until an explicit release promotion.
 
-The controller's own commit is captured by `@workflow` only for `custom-next`; all other sources
-are explicitly pinned. Keep the stable Custom source pinned to its released commit until the
-user approves promotion. Never present an empty planned feature branch as an implemented feature.
-To select another current PR candidate, update the root manifest entry and add/preserve its
-`features/<feature>` alias; earlier feature routes remain available.
+The controller runs firmware/memory/target checks, the complete host source suite and
+WebAssembly/native checks before publication. Linux host tests use `CC="cc -include stdint.h"`
+for upstream 1.6's drum stress test; assertions are not disabled. Transient SDK download
+failures are retried without changing test requirements. Relevant `github-pages` deployment
+branches (`precheck` and `custom-next`) are already authorized; preserve their existing rules.
 
-All registered channels must pass source builds, target checks, the complete host suite and
-WebAssembly checks before any site is deployed. The infrastructure suite also verifies checksums,
-channel preservation and source pinning. Hardware tests remain separately recorded. Optional
-upstream checks such as the DaisySP comparison are subject to their documented dependencies;
-the host CPU counter is platform-dependent, and target budgets are estimates, not real device timing.
-On the Linux runner, host tests use `CC="cc -include stdint.h"`: upstream 1.6's drum stress test
-uses `uint32_t` before including its standard header with PREEMPT. This supplies that header
-without modifying firmware sources, disabling the stress test or changing its assertions.
+### BYTE/FLOAT allocation correction
 
-Publication is serialized per repository. It loads `gh-pages`, verifies the new artifacts,
-updates only their channels, retains immutable builds and deploys the whole site. Never use an
-older standalone preview workflow to deploy just one subtree: that would erase other channels.
-The channel controller replaces the legacy Custom publishers when `custom-next` is eventually
-promoted to `main`. Keep GitHub Pages set to Actions and allow the relevant controller branch
-(`precheck` or `custom-next`, later `main`) in the existing `github-pages` environment.
+BYTE/FLOAT was prematurely implemented in Felucca-PR before being selected for upstream.
+**No official upstream PR was opened.** Its code/tests are preserved as a Custom experiment:
 
-### Initial state and next integration step
-
-- The previous Step Recording candidate remains pinned at
-  `6ec3268bb7cc92a3edeb1080d2def765a103b768` (1.5.6-based). Existing feature branches are retained.
-- New planned branches are `upstream/morph`, `upstream/phase-feedback` and `upstream/bytebeat`,
-  starting from upstream 1.6. They contain no implementation yet.
-- `custom-next` initially preserves the complete Bonszai 7 firmware from
-  `2103e6fb669267fb4f2ea0901042a90313ee6f46`, adding only infrastructure and procedure changes.
-- First synchronize the Custom firmware with upstream 1.6 in a separate integration change.
-  The trial merge found real conflicts in sequencer, persistence, UI and tests; no conflicted
-  firmware is published. Verify Bonszai behavior and reconcile overlapping upstream features
-  (especially DOUBLE/HALF) before integrating new JIANT sound features.
-- The released `1.5.1-bonszai-7` tag and existing upstream PR history are retained.
-
-### First sound-feature candidate
-
-`upstream/bytebeat` starts directly from upstream 1.6. Source `9ce1bf1325dc2d15d53affdd07acce20ef12835f` appends LOFI BYTE/FLOAT (32 formulas each, two presets), preserving the five existing waves, preset indexes and the 111-parameter storage layout. Its installer, emulator and editor are at `https://fgunited.github.io/Felucca-PR/features/bytebeat/` after the complete channel workflow succeeds. Local upstream-reference renders, formula bounds/time-wrap, live-mode/retrigger, project/user-preset and UBSan tests pass; the 100-render regression has zero existing sound or health changes. MORPH and PHASE feedback remain separate, unimplemented branches.
+- `fgunited/Felucca:feature/bytebeat`: `472eb6997a26656176068f04c0473b45a8fc5d2e`.
+- Experiment preview: `https://fgunited.github.io/Felucca/features/bytebeat/` after successful CI.
+- Complete combination: `fgunited/Felucca:custom-next`, preview at `custom-next/`.
+- Felucca-PR's BYTE/FLOAT preview entry is withdrawn. Its previously planned `upstream/bytebeat`
+  branch is restored to the exact upstream 1.6 tree in `48fe98a821a7f258c9e12f5efa1581eb16203df7`
+  without rewriting history; it is inactive and is not an official PR candidate.
+- `upstream/morph` and `upstream/phase-feedback` in Felucca-PR are empty planned placeholders,
+  not implementations or selected official PRs. Develop those ports in Custom first. PHASE
+  feedback must preserve FOLD; settle MORPH/feedback parameter-id/storage compatibility before
+  implementing them. Do not silently reuse legacy FM values.
