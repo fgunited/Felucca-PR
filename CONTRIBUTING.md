@@ -128,3 +128,7 @@ promoted to `main`. Keep GitHub Pages set to Actions and allow the relevant cont
   firmware is published. Verify Bonszai behavior and reconcile overlapping upstream features
   (especially DOUBLE/HALF) before integrating new JIANT sound features.
 - The released `1.5.1-bonszai-7` tag and existing upstream PR history are retained.
+
+### First sound-feature candidate
+
+`upstream/bytebeat` starts directly from upstream 1.6. Source `320be19afb0415e3a80c6c2fb57490b2e60d262b` appends LOFI BYTE/FLOAT (32 formulas each, two presets), preserving the five existing waves, preset indexes and the 111-parameter storage layout. Its installer, emulator and editor are at `https://fgunited.github.io/Felucca-PR/features/bytebeat/` after the complete channel workflow succeeds. Local upstream-reference renders, formula bounds/time-wrap, live-mode/retrigger, project/user-preset and UBSan tests pass; the 100-render regression has zero existing sound or health changes. MORPH and PHASE feedback remain separate, unimplemented branches.
