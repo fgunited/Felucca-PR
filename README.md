@@ -1,7 +1,5 @@
 # Felucca
 
-LOFI sound-feature candidate: WAVE appends BYTE and FLOAT (values 5 and 6) with 32 formulas each. Existing waves and preset numbers retain their meaning. ALGO selects the formula, VAR mutates time, MOTION controls the slow time, GRIT holds BYTE samples, FEEDBK feeds FLOAT output into its phase, BEND has four levels and LOOP limits the time window. BYTEBEAT and FLOAT FM are appended factory presets. New-mode controls use the existing eight engine parameters; this candidate adds no common parameters or storage format. CHIP STEP retains its stepped envelope.
-
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 
 ![Felucca 1.0](docs/felucca-1.0.png)

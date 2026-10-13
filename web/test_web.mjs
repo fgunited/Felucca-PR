@@ -168,18 +168,6 @@ async function editorMock() {
     const rows = E.devicePresetRows(info, names, prefs).filter((r) => !r.user), eng = [...new Set(rows.map((r) => r.engine))];
     ok(eng[0] === 0 && eng[1] === 12 && eng[eng.length - 1] === 10, "editor: device presets in the device's engine order");
   }
-  { // BYTE/FLOAT mode descriptors are read after changing WAVE, in the real editor and mock.
-    await rq(E.req.preset(3, 5));
-    const b = [];
-    for (let k = 0; k < 8; k++) b.push(E.parse[E.CMD.DESC](await rq(E.req.desc(0, info.pe0 + k))));
-    ok(b.map(d=>d.label).join() === "CHIP,WAVE,ALGO,VAR,MOTION,GRIT,BEND,LOOP" && b[1].names.slice(5).join() === "BYTE,FLOAT",
-       "editor: BYTE descriptors and appended WAVE values");
-    await rq(E.req.preset(3, 6));
-    ok(E.parse[E.CMD.DESC](await rq(E.req.desc(0, info.pe0 + 5))).label === "FEEDBK" &&
-       E.fmtValue({formulaPrefix:"B"},127)[0] === "B32" && E.fmtValue({formulaPrefix:"F"},4)[0] === "F02",
-       "editor: FLOAT feedback descriptor and formula names");
-    await rq(E.req.preset(0, 0));
-  }
   const none = await E.readDevicePreferences(() => { throw new Error("unexpected request"); }, { uiCaps: 0 }, []);
   ok(none === null, "editor: old firmware receives no unsupported preference requests");
   if (!E.readDeviceMenu) console.log(`${"editor: MENU settings (this editor has none)".padEnd(64)} skip`);

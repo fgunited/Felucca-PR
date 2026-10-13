@@ -782,7 +782,6 @@ function parseNotes(s) {
 
 /* close to the device's param_format (params.c), tables from tools/gen_tables.py */
 function fmtValue(d, v) {
-  if (d.formulaPrefix) return [d.formulaPrefix + String((v >> 2) + 1).padStart(2, "0"), ""];
   const sign = (x) => (x > 0 ? "+" + x : String(x));
   switch (d.fmt) {
     case F.PCT: return [String(d.max === 100 ? v : Math.trunc((v * 100 + 63) / 127)), "%"];   /* 0..100 (SWG): the value */
@@ -1715,12 +1714,11 @@ function makeMockDevice(opt = {}) {
       presets: [P("BRASS", [0, 0, 30, 90, 0, 0, 0, 0], [8, 70, 90, 40], 0, 6), P("ORGAN", [3, 0, 40, 0, 0, 0, 0, 0], [0, 127, 127, 30], 0, 6),
         P("STRING", [0, 4, 50, 40, 12, 0, 0, 0], [40, 90, 100, 70], 0, 5), P("RESO", [5, 0, 60, 60, 0, 0, 0, 0], [0, 70, 30, 60], 0, 1),
         P("BELL", [6, 0, 80, 50, 0, 0, 0, 0], [0, 95, 0, 90], 0, 7), P("WIRE", [4, 7, 70, 40, 7, 0, 0, 0], [10, 80, 80, 60], 0, 4)] },
-    { name: "LOFI", titles: ["CHIP", "MOTN"], edit: [E("CHIP", ["4BIT", "4B/2", "8BIT", "1BIT", "STEP"], 0), E("WAVE", ["PLS", "TRI", "SAW", "NOIS", "WRAM", "BYTE", "FLOAT"], 0), D("DUTY", F.INT, 0, 127, 64),
+    { name: "LOFI", titles: ["CHIP", "MOTN"], edit: [E("CHIP", ["4BIT", "4B/2", "8BIT", "1BIT", "STEP"], 0), E("WAVE", ["PLS", "TRI", "SAW", "NOIS", "WRAM"], 0), D("DUTY", F.INT, 0, 127, 64),
         D("CRSH", F.PCT, 0, 127, 0), D("SWP", F.PCT, 0, 127, 0), D("VIB", F.PCT, 0, 127, 0), E("ARP", ["OFF", "OCT", "MAJ", "MIN"], 0), D("TONE", F.PCT, 0, 127, 127)],
       presets: [P("PULSE LD", [0, 0, 32, 0, 0, 20, 0, 127], [0, 60, 90, 30], 1, 4), P("WAVE BASS", [1, 1, 0, 0, 0, 0, 0, 90], [0, 50, 70, 20], 1, 2),
         P("ARP 8BIT", [2, 0, 96, 0, 0, 0, 2, 110], [0, 60, 80, 40], 0, 13), P("WAVE LEAD", [0, 4, 92, 0, 0, 18, 0, 110], [0, 70, 90, 30], 1, 3),
-        P("STEP LEAD", [4, 0, 40, 34, 0, 16, 0, 127], [0, 64, 127, 55], 1, 4),
-        P("BYTEBEAT", [2, 5, 4, 0, 64, 0, 0, 0], [0, 80, 110, 40], 1, 4), P("FLOAT FM", [2, 6, 4, 0, 64, 0, 0, 0], [0, 60, 90, 40], 1, 4)] },
+        P("STEP LEAD", [4, 0, 40, 34, 0, 16, 0, 127], [0, 64, 127, 55], 1, 4)] },
     { name: "SAMPLE", titles: ["SET", "TONE"], edit: [E("SET", ["PIANO", "PIANO", "FLUTE", "SAX", "PIANO", "USR1", "USR2", "USR3"], 0), D("TUNE", F.SEMI, -24, 24, 0), D("BITS", F.INT, 0, 127, 0),
         E("LOOP", NONOFF, 1), D("CUT", F.INT, 0, 127, 127), NONE, D("DRV", F.PCT, 0, 127, 0), NONE],
       presets: [P("PIANO", [0, 0, 0, 1, 127, 0, 0, 0], [0, 127, 127, 70]), P("PIANO", [0, 0, 0, 1, 127, 0, 0, 0], [0, 127, 127, 70]),
@@ -1831,20 +1829,8 @@ function makeMockDevice(opt = {}) {
     Object.defineProperty(st, k, { enumerable: false, get: () => st.tracks[st.sel][k], set: (v) => { st.tracks[st.sel][k] = v; } });
   }
   const watchMs = opt.watchMs || 3000;
-  const desc = (scope, id) => {
-    const d = scope === 0 && id < P_COUNT ? (id >= P_E0 ? ENG[st.engine].edit[id - P_E0] : TP[id]) : scope === 1 && id < G_COUNT ? GP[id] : null;
-    if (scope === 0 && ENG[st.engine].name === "LOFI" && st.p[P_E0 + 1] >= 5 && id >= P_E0) {
-      const wave = st.p[P_E0 + 1], k = id - P_E0;
-      if (k === 0 && wave === 6) return E("CHIP", ["4BIT", "4B/2", "FULL", "1BIT", "STEP"], 2);
-      if (k === 2) return D("ALGO", F.INT, 0, 127, 64);
-      if (k === 3) return D("VAR", F.PCT, 0, 127, 0);
-      if (k === 4) return D("MOTION", F.INT, 0, 127, 64);
-      if (k === 5) return D(wave === 5 ? "GRIT" : "FEEDBK", F.PCT, 0, 127, 0);
-      if (k === 6) return E("BEND", ["OFF", "LIGHT", "MED", "DEEP"], 0);
-      if (k === 7) return D("LOOP", F.PCT, 0, 127, 0);
-    }
-    return d;
-  };
+  const desc = (scope, id) => (scope === 0 && id < P_COUNT ? (id >= P_E0 ? ENG[st.engine].edit[id - P_E0] : TP[id])
+    : scope === 1 && id < G_COUNT ? GP[id] : null);
   const EMPTY = { n: 0, notes: [0, 0, 0, 0], time: 2, flags: 0, vel: 0, hit: 0, acc: 0, chance: 100, ratchet: 1 };
   const isDrum = () => ENG[st.engine].name === "DRUM";
   const clearSteps = () => st.step.forEach((s) => Object.assign(s, EMPTY, { notes: [0, 0, 0, 0] }));
@@ -3213,9 +3199,6 @@ function paramRow(s, id) {
 function showValue(k, v, force) {
   const c = ctl.get(k);
   if (!c || v == null) return;
-  if (!c.scope && c.id === dev.info.pe0 + 2 && dev.info.engines[dev.dump.engine] === "LOFI" && dev.dump.p[dev.info.pe0 + 1] >= 5)
-    c.desc.formulaPrefix = dev.dump.p[dev.info.pe0 + 1] === 5 ? "B" : "F";
-  else delete c.desc.formulaPrefix;
   const [txt0, unit] = fmtValue(c.desc, v), txt = modDst(c.desc, txt0);
   c.out.textContent = unit ? `${txt} ${unit}` : txt;
   if (force || !touched(k)) c.input.value = String(v);
@@ -3248,7 +3231,6 @@ function userSet(s, id, v, final) {
 }
 async function sendSet(s, id, k) {
   if (!dev) return;
-  const d = dev;
   const st = sets.get(k);
   const v = (s ? dev.dump.g : dev.dump.p)[id];
   st.sent = v;
@@ -3258,9 +3240,6 @@ async function sendSet(s, id, k) {
       (s ? dev.dump.g : dev.dump.p)[id] = r.value;
       showValue(k, r.value, false);
       mixFromDump();
-      if (d === dev && !s && id === d.info.pe0 + 1 && d.info.engines[d.dump.engine] === "LOFI") {
-        await rereadEngineDesc(d); refreshAll();
-      }
     }
   } catch (e) { if (e.message !== "closed") console.warn(e); }
 }
@@ -4256,9 +4235,6 @@ function onPush(f) {
       showValue(k, c.value, false);
       blink(k);
       mixFromDump();
-      if (!c.scope && c.id === d.info.pe0 + 1 && d.info.engines[d.dump.engine] === "LOFI" && old !== c.value) {
-        needReload = true; maybeReload();
-      }
       if (!c.scope && c.id === pSlen() && old !== c.value) { $("steptables").dataset.len = ""; renderSteps(); }
     } else if (f.cmd === CMD.RELOAD) {
       d.sel = parse[CMD.RELOAD](f.a).track;          /* v3: another track may be selected on the device */
@@ -4345,7 +4321,6 @@ setInterval(async () => {
     if (d !== dev) return;
     const soundChanged = dump.engine !== d.dump.engine || dump.preset !== d.dump.preset;
     const engineChanged = dump.engine !== d.dump.engine;
-    const waveChanged = d.info.engines[dump.engine] === "LOFI" && dump.p[d.info.pe0 + 1] !== d.dump.p[d.info.pe0 + 1];
     const oldLen = d.dump.p[pSlen()];
     for (const [k, c] of ctl) {
       const v = c.scope ? dump.g[c.id] : dump.p[c.id];
@@ -4353,7 +4328,7 @@ setInterval(async () => {
       showValue(k, v, false);
     }
     d.dump = dump;
-    if (engineChanged || waveChanged) { await rereadEngineDesc(); refreshAll(); }
+    if (engineChanged) await rereadEngineDesc();
     if (hasTracks()) await readMixer();             /* the strips (other tracks push nothing) */
     if (soundChanged) { updateBrowser(); await loadSteps(); sayK("ready"); return; }
     if (dump.p[pSlen()] !== oldLen) { $("steptables").dataset.len = ""; renderSteps(); }

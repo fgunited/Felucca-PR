@@ -14,7 +14,7 @@ import os
 import re
 import sys
 
-FUNCS = ["analog_render", "digital_render", "digital_render_legacy", "digital_render_custom", "phase_render", "phase_render_f", "lofi_render", "lofi_formula_render", "lofi_byte", "lofi_float", "sample_render", "formant_render",
+FUNCS = ["analog_render", "digital_render", "digital_render_legacy", "digital_render_custom", "phase_render", "phase_render_f", "lofi_render", "sample_render", "formant_render",
          "trio_render", "trio_pass", "wheel_render", "wheel_block",
          "grain_render", "grain_block", "phys_render", "drum_render", "noise_render", "fm6_render", "fm6_op_run", "fm6_op_fb", "px_modal_block", "px_modal_run", "px_memb_block",
          "px_string_excite", "px_string_run", "px_symp_run",
@@ -65,16 +65,9 @@ def functions(path):
     return out
 
 
-FORMULA_CORES = {"lofi_byte", "lofi_float"}
-
-
-def cost(insns, formula_core=False):
+def cost(insns):
     """loops: one span per loop head (the farthest backward branch to it); an instruction inside d
     spans weighs NEST ** (d - 1) (an inner loop runs several times per pass of the outer one)"""
-    if formula_core:
-        # Called per sample: check the complete emitted formula switch, including
-        # straight-line cases that the renderer loop metric otherwise omits.
-        return {"insns": len(insns), "loop": 0, "div": 0, "call": 0, "cost": len(insns)}
     lo = insns[0][0]
     heads = {}
     for a, t in insns:
@@ -103,7 +96,7 @@ def main():
         print(f"target: skip ({dis} missing: run ./build.sh)")
         return 0
     fns = functions(dis)
-    res = {n: cost(fns[n], n in FORMULA_CORES) for n in FUNCS if fns.get(n)}
+    res = {n: cost(fns[n]) for n in FUNCS if fns.get(n)}
     missing = [n for n in FUNCS if n not in res and n not in OPTIONAL]
     base = {}
     if os.path.exists(budget):

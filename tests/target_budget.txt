@@ -60,8 +60,3 @@ rev_side_mix 9
 track_insert 3
 ins_drive 277
 ins_swept 230
-
-# BYTE/FLOAT: observed pi32v2 baseline; formula cores use the full code footprint, not loop-only cost.
-lofi_formula_render 183
-lofi_byte 324
-lofi_float 840
