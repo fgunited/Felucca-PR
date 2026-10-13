@@ -1,0 +1,23 @@
+{
+  "repository": "fgunited/Felucca-PR",
+  "channels": [
+    {
+      "id": "precheck",
+      "title": "Step Recording während der Wiedergabe",
+      "description": "Ein einzelner Upstream-Kandidat. SEQ > STEP, PLAY, SEQ halten und REC drücken. STEP REC schreibt am Eingabecursor; SEQ + REC schaltet wieder auf LIVE REC.",
+      "kind": "PR PRECHECK · HARDWARETEST AUSSTEHEND",
+      "ref": "6ec3268bb7cc92a3edeb1080d2def765a103b768",
+      "path": ".",
+      "aliases": ["features/step-record-playback"]
+    },
+    {
+      "id": "upstream",
+      "title": "Felucca 1.6 – unveränderte Upstream-Basis",
+      "description": "Vergleichsversion ohne Bonszai-Erweiterungen. Neue einzelne Features werden von genau dieser Basis abgezweigt.",
+      "kind": "UPSTREAM-REFERENZ",
+      "ref": "1727537624390cc3f9c7dff2456b43b3a8edb005",
+      "path": "upstream",
+      "aliases": []
+    }
+  ]
+}

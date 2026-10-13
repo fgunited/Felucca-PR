@@ -1,4 +1,5 @@
-name: Precheck build and Pages
+# SPDX-License-Identifier: GPL-3.0-only
+name: Tested firmware channels
 
 on:
   push:
@@ -9,16 +10,38 @@ permissions:
   contents: read
 
 concurrency:
-  group: felucca-precheck-pages
-  cancel-in-progress: true
+  group: felucca-pages
+  cancel-in-progress: false
 
 jobs:
-  build:
-    if: github.repository == 'fgunited/Felucca-PR' && github.ref == 'refs/heads/precheck'
+  prepare:
+    if: github.repository == 'fgunited/Felucca-PR'
     runs-on: ubuntu-22.04
-    timeout-minutes: 60
+    outputs:
+      matrix: ${{ steps.channels.outputs.matrix }}
     steps:
       - uses: actions/checkout@v6
+      - name: Check publication integrity and channel configuration
+        run: python3 tests/preview_site_test.py
+      - name: Resolve pinned source commits
+        id: channels
+        run: python3 tools/preview_site.py matrix .github/preview-channels.json >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: prepare
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: infra
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.ref }}
+          path: source
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
@@ -26,58 +49,119 @@ jobs:
         with:
           node-version: '22'
       - name: Install Python dependencies
-        run: python -m pip install Pillow fonttools
-      - name: Install JieLi toolchain
-        run: sh tools/get_toolchain.sh "$RUNNER_TEMP/jieli"
-      - name: Download required AC79 SDK
+        run: python3 -m pip install Pillow fonttools
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/jieli
+            ${{ runner.temp }}/ac79-sdk
+          key: felucca-jieli-ac79nn-v1.2.1
+      - name: Prepare JieLi toolchain and required SDK
+        working-directory: source
+        shell: bash
         run: |
-          git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
-            https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$RUNNER_TEMP/ac79-sdk"
-      - name: Build firmware and check target budgets
+          set -euo pipefail
+          if [ ! -x "$RUNNER_TEMP/jieli/toolchain/pi32v2/bin/clang" ]; then
+            sh tools/get_toolchain.sh "$RUNNER_TEMP/jieli"
+          fi
+          if [ ! -f "$RUNNER_TEMP/ac79-sdk/cpu/wl82/tools/uboot.boot" ]; then
+            git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
+              https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$RUNNER_TEMP/ac79-sdk"
+          fi
+      - name: Build firmware and check memory layout
+        working-directory: source
+        shell: bash
         run: |
           export JIELI_TOOLCHAIN="$RUNNER_TEMP/jieli/toolchain"
           export AC79_SDK="$RUNNER_TEMP/ac79-sdk"
           sh build.sh
-      - name: Build browser emulator
+      - name: Prepare Emscripten
         shell: bash
         run: |
           git clone --depth 1 --branch 4.0.23 https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
           "$RUNNER_TEMP/emsdk/emsdk" install 4.0.23
           "$RUNNER_TEMP/emsdk/emsdk" activate 4.0.23
-          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
-          sh web/emu/build.sh
-      - name: Run regression suite and emulator checks
+      - name: Build emulator and run the complete source suite
+        working-directory: source
         shell: bash
         run: |
+          set -euo pipefail
           export JIELI_TOOLCHAIN="$RUNNER_TEMP/jieli/toolchain"
           export AC79_SDK="$RUNNER_TEMP/ac79-sdk"
           source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          sh web/emu/build.sh
           sh tests/run_tests.sh
           node web/emu/emu_test.mjs build/emu/felucca.wasm
-      - name: Assemble matching installer, editor, firmware and emulator
-        run: python tools/make_precheck_site.py build/precheck-site
-      - name: Upload downloadable test package
-        uses: actions/upload-artifact@v4
+      - name: Assemble matching firmware, installer, editor and emulator
+        env:
+          CHANNEL_JSON: ${{ toJSON(matrix) }}
+          CHANNEL_ID: ${{ matrix.id }}
+        run: python3 infra/tools/preview_site.py assemble source "build/channel-$CHANNEL_ID"
+      - uses: actions/upload-artifact@v4
         with:
-          name: felucca-precheck-${{ github.sha }}
-          path: build/precheck-site/
+          name: channel-${{ matrix.id }}
+          path: build/channel-${{ matrix.id }}/
+          include-hidden-files: true
           if-no-files-found: error
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/precheck-site
 
-  deploy:
-    needs: build
+  publish:
+    needs: [prepare, build]
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
+      contents: write
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy tested precheck build
+      - uses: actions/checkout@v6
+        with:
+          path: infra
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: channel-*
+          path: incoming
+      - name: Restore persistent Pages channels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          if git ls-remote --exit-code "https://github.com/$GITHUB_REPOSITORY.git" refs/heads/gh-pages >/dev/null; then
+            git clone --depth 1 --branch gh-pages "https://github.com/$GITHUB_REPOSITORY.git" state
+          else
+            mkdir state
+            git -C state init
+            git -C state checkout --orphan gh-pages
+            git -C state remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          fi
+      - name: Preserve other channels and immutable builds
+        run: python3 infra/tools/preview_site.py publish incoming state
+      - name: Save the complete Pages state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C state config user.name github-actions[bot]
+          git -C state config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C state add .
+          if ! git -C state diff --cached --quiet; then
+            git -C state commit -m "Publish tested channels from run $GITHUB_RUN_ID"
+            git -C state push origin HEAD:gh-pages
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: state
+      - name: Deploy tested channels
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Record publication
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          echo "Tested channels: $PAGES_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source commits and checksums are linked on every channel page." >> "$GITHUB_STEP_SUMMARY"

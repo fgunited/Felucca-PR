@@ -1,5 +1,7 @@
 # Felucca
 
+Development and preview channels: [Bonszai workflow](CONTRIBUTING.md#bonszai-development-and-upstream-contributions).
+
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 
 ![Felucca 1.0](docs/felucca-1.0.png)
