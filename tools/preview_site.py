@@ -79,8 +79,8 @@ def assemble(source, out, item, repository):
     emu_page = out / "webapp/try/index.html"
     content = emu_page.read_text()
     storage = json.dumps(f"felucca-emu-flash:{repository}:{item['id']}:{sha}")
-    content, replaced = re.subn(r'const STORE = "felucca-emu-flash";',
-                               lambda _: f"const STORE = {storage};", content, count=1)
+    content, replaced = re.subn(r'\bconst\s+STORE\s*=\s*"felucca-emu-flash"(?=\s*[,;])',
+                               lambda _: f"const STORE = {storage}", content, count=1)
     if replaced != 1:
         raise ValueError("Emulator storage namespace changed; review channel isolation")
     emu_page.write_text(content)

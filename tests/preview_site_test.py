@@ -112,7 +112,7 @@ class Publication(unittest.TestCase):
         (source / "firmware/src/felucca.c").write_text('#define FELUCCA_VERSION "v1.6"\n')
         emulator = source / "build/emu"
         emulator.mkdir(parents=True)
-        (emulator / "index.html").write_text('<html><body><script>const STORE = "felucca-emu-flash";</script></body></html>')
+        (emulator / "index.html").write_text('<html><body><script>const STORE = "felucca-emu-flash", KNOBS_ON = "felucca-emu-knobs";</script></body></html>')
         (emulator / "felucca.wasm").write_bytes(b"wasm-fixture")
         (emulator / "worklet.js").write_text("// worklet fixture\n")
         (source / "build/loader").mkdir()
@@ -136,6 +136,7 @@ class Publication(unittest.TestCase):
         self.assertEqual(info["source_commit"], sha)
         self.assertEqual((out / info["package"]).read_bytes(), raw)
         self.assertIn(f"felucca-emu-flash:fgunited/Felucca-PR:morph:{sha}", (out / "webapp/try/index.html").read_text())
+        self.assertIn('KNOBS_ON = "felucca-emu-knobs"', (out / "webapp/try/index.html").read_text())
         self.assertIn("Morph candidate", (out / "webapp/editor/index.html").read_text())
         self.assertIn("../../firmware/felucca-1.6-morph-", (out / "webapp/installer/index.html").read_text())
         item["ref"] = "b" * 40
