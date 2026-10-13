@@ -64,9 +64,23 @@ jobs:
           if [ ! -x "$RUNNER_TEMP/jieli/toolchain/pi32v2/bin/clang" ]; then
             sh tools/get_toolchain.sh "$RUNNER_TEMP/jieli"
           fi
-          if [ ! -f "$RUNNER_TEMP/ac79-sdk/cpu/wl82/tools/uboot.boot" ]; then
-            git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
-              https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$RUNNER_TEMP/ac79-sdk"
+          sdk="$RUNNER_TEMP/ac79-sdk"
+          if [ ! -f "$sdk/cpu/wl82/tools/uboot.boot" ] || [ ! -f "$sdk/cpu/wl82/tools/cfg_tool.bin" ] || [ ! -f "$sdk/cpu/wl82/tools/cfg/eq_cfg_hw.bin" ]; then
+            if [ -d "$sdk" ]; then mv "$sdk" "$sdk-incomplete-$GITHUB_RUN_ID"; fi
+            fetched=false
+            for delay in 0 5 15 30; do
+              sleep "$delay"
+              attempt=$(mktemp -d "$RUNNER_TEMP/ac79-attempt.XXXXXX")
+              if git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
+                https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$attempt/source"; then
+                mv "$attempt/source" "$sdk"
+                rmdir "$attempt"
+                fetched=true
+                break
+              fi
+              rm -rf "$attempt"
+            done
+            if [ "$fetched" != true ]; then echo "SDK download failed after four attempts" >&2; exit 1; fi
           fi
       - name: Build firmware and check memory layout
         working-directory: source
@@ -82,6 +96,10 @@ jobs:
           "$RUNNER_TEMP/emsdk/emsdk" install 4.0.23
           "$RUNNER_TEMP/emsdk/emsdk" activate 4.0.23
       - name: Build emulator and run the complete source suite
+        # Upstream drumfuzz's PREEMPT declarations precede its stdint include on GCC.
+        # Supply the standard types to host compilation; source and assertions stay unchanged.
+        env:
+          CC: cc -include stdint.h
         working-directory: source
         shell: bash
         run: |

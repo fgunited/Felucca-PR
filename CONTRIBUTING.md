@@ -104,6 +104,9 @@ WebAssembly checks before any site is deployed. The infrastructure suite also ve
 channel preservation and source pinning. Hardware tests remain separately recorded. Optional
 upstream checks such as the DaisySP comparison are subject to their documented dependencies;
 the host CPU counter is platform-dependent, and target budgets are estimates, not real device timing.
+On the Linux runner, host tests use `CC="cc -include stdint.h"`: upstream 1.6's drum stress test
+uses `uint32_t` before including its standard header with PREEMPT. This supplies that header
+without modifying firmware sources, disabling the stress test or changing its assertions.
 
 Publication is serialized per repository. It loads `gh-pages`, verifies the new artifacts,
 updates only their channels, retains immutable builds and deploys the whole site. Never use an
