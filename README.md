@@ -118,6 +118,14 @@ Multi-engine synthesizer firmware for the M-VAVE FM-1. Please report what you fi
   (everything but the FM6 voice bank: keep its .syx file);
   return to the official firmware; Felucca itself running in the browser
 
+## Unreleased
+
+- **STEP REC during playback:** on a melodic **SEQ > STEP** page, hold **SEQ** and tap **REC**.
+  KNOB 1 / PRESETS selects the input step; panel keys enter notes/chords while the playhead continues
+  independently. Releasing all keys advances the input cursor once (CHORD ENTRY ADD keeps it in place).
+  Repeat SEQ + REC to switch to LIVE REC; a normal REC tap disarms. The mode is per track and is not saved.
+  MIDI notes still play but do not write steps in STEP REC; knob turns do not record live automation in this mode.
+
 ## New in 1.5.6
 
 1.5.6 is the release after 1.5.1 (1.5.5 was never released): everything below is new since 1.5.1. "OCT− held +
@@ -524,7 +532,9 @@ For more details, see [On AI-Assisted Development and Responsibility](https://gi
   [spinkham](https://github.com/spinkham) (the boot fix for 0.9 projects, #111),
   [zednaked](https://github.com/zednaked) (ratchets, #100),
   [jasonpersinger](https://github.com/jasonpersinger) (the ROOM reverb click fix, #121),
-  [renebohne](https://github.com/renebohne) (MIDI Program Change, #179)
+  [renebohne](https://github.com/renebohne) (MIDI Program Change, #179),
+  [bonszaimusic](https://www.youtube.com/@bonszaimusic) / [fgunited](https://github.com/fgunited)
+  (STEP REC during playback)
 
 ## Licence
 
