@@ -1,0 +1,20 @@
+{
+  "id": "precheck",
+  "title": "Step Recording w\u00e4hrend der Wiedergabe",
+  "description": "Ein einzelner Upstream-Kandidat. SEQ > STEP, PLAY, SEQ halten und REC dr\u00fccken. STEP REC schreibt am Eingabecursor; SEQ + REC schaltet wieder auf LIVE REC.",
+  "kind": "PR PRECHECK \u00b7 HARDWARETEST AUSSTEHEND",
+  "ref": "6ec3268bb7cc92a3edeb1080d2def765a103b768",
+  "path": ".",
+  "aliases": [
+    "features/step-record-playback"
+  ],
+  "source_repository": "fgunited/Felucca-PR",
+  "source_commit": "6ec3268bb7cc92a3edeb1080d2def765a103b768",
+  "firmware_version": "v1.5.6",
+  "preview_version": "1.5.6-precheck-6ec3268b",
+  "built_at_utc": "2026-10-13T08:50:22+00:00",
+  "workflow_run": "38370665417",
+  "checks": "firmware build, target budgets, host suite and WebAssembly checks passed",
+  "hardware_test": "pending",
+  "package": "firmware/felucca-preview.fwsc"
+}
