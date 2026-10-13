@@ -88,7 +88,8 @@ class Publication(unittest.TestCase):
 
     def test_pins_and_paths_are_validated(self):
         config = self.root / "channels.json"
-        data = {"repository": "fgunited/Felucca-PR", "channels": [{"id": "precheck", "ref": "main", "path": "."}]}
+        data = {"repository": os.environ.get("GITHUB_REPOSITORY", "fgunited/Felucca-PR"),
+                "channels": [{"id": "precheck", "ref": "main", "path": "."}]}
         config.write_text(json.dumps(data))
         with self.assertRaisesRegex(ValueError, "full commit SHA"):
             site.channels(config, "a" * 40)
