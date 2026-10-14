@@ -1,0 +1,18 @@
+{
+  "id": "trs-clock-cc-load",
+  "title": "TRS MIDI Clock unter CC-Last \u00b7 Upstream 1.6",
+  "description": "Isolierter Bugfix: TRS-MIDI wird auch w\u00e4hrend Audio-Berechnungen ausgelesen. Gleichm\u00e4\u00dfige Clock-Zeitstempel bei hoher CC-Last, ohne Custom-Sound-Features oder \u00c4nderungen an MIDI Learn.",
+  "kind": "BUGFIX PRECHECK \u00b7 HARDWAREVERGLEICH AUSSTEHEND",
+  "ref": "ed341002ee25ceb58fcfa3d54ca45bd0cb734eee",
+  "path": "features/trs-clock-cc-load",
+  "aliases": [],
+  "source_repository": "fgunited/Felucca-PR",
+  "source_commit": "ed341002ee25ceb58fcfa3d54ca45bd0cb734eee",
+  "firmware_version": "v1.6",
+  "preview_version": "1.6-trs-clock-cc-load-ed341002",
+  "built_at_utc": "2026-10-14T06:27:51+00:00",
+  "workflow_run": "38521394921",
+  "checks": "firmware build, target budgets, host suite and WebAssembly checks passed",
+  "hardware_test": "pending",
+  "package": "firmware/felucca-preview.fwsc"
+}
