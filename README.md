@@ -25,6 +25,14 @@ Thirteen engines with factory presets, four tracks (8 voices shared), a 64-step 
 ratchets, nudge, locks, automation, live and step recording), SEQ TOOLS, songs, effects, a MOD matrix, MIDI (USB and TRS,
 per-track channels, MIDI LEARN) and USB audio. More: [Features](https://github.com/hugelton/Felucca/wiki/Features).
 
+## Unreleased
+
+- **STEP REC during playback:** on a melodic **SEQ > STEP** page, hold **SEQ** and tap **REC**.
+  KNOB 1 / PRESETS selects the input step; panel keys enter notes/chords while the playhead continues
+  independently. Releasing all keys advances the input cursor once (CHORD ENTRY ADD keeps it in place).
+  Repeat SEQ + REC to switch to LIVE REC; a normal REC tap disarms. The mode is per track and is not saved.
+  MIDI notes still play but do not write steps in STEP REC; knob turns do not record live automation in this mode.
+
 ## New in 1.6
 
 - **Your own UI colours:** COLOR has an eleventh value, CUSTOM, set in the web editor with a live preview on the FM-1
