@@ -166,13 +166,26 @@ def publish(incoming, state):
         info = verify_package(folder)
         for path in [info["path"], *info.get("aliases", [])]:
             route(path)
-        entries.append((folder, info))
+        immutable = state / "builds" / info["id"] / info["source_commit"]
+        if immutable.exists():
+            verify_package(immutable)
+            manifest = (folder / "SHA256SUMS").read_bytes()
+            if (immutable / "SHA256SUMS").read_bytes() != manifest:
+                # Rebuilding a source commit can produce a different package. Keep
+                # the first archive intact and give each validated artifact its own
+                # content identity, including firmware, emulator and metadata.
+                immutable /= hashlib.sha256(manifest).hexdigest()
+                if immutable.exists():
+                    verify_package(immutable)
+                    if (immutable / "SHA256SUMS").read_bytes() != manifest:
+                        raise ValueError("An immutable artifact already exists with different contents")
+        entries.append((folder, info, immutable))
     if not entries:
         raise ValueError("No tested channel artifacts")
     # Root first; nested channels and immutable builds always survive a root replacement.
     entries.sort(key=lambda pair: pair[1]["path"] != ".")
     protected = {".git", "builds", "features", "custom-next", "upstream"}
-    for folder, info in entries:
+    for folder, info, immutable in entries:
         for path in [info["path"], *info.get("aliases", [])]:
             destination = state if path == "." else state / path
             if path == ".":
@@ -186,12 +199,7 @@ def publish(incoming, state):
                 shutil.rmtree(destination)
             shutil.copytree(folder, destination, dirs_exist_ok=True)
             catalog[path] = {**info, "path": path}
-        immutable = state / "builds" / info["id"] / info["source_commit"]
-        if immutable.exists():
-            original = json.loads((immutable / "build-info.json").read_text())
-            if hashlib.sha256((immutable / original["package"]).read_bytes()).digest() != hashlib.sha256((folder / info["package"]).read_bytes()).digest():
-                raise ValueError("An immutable build already exists with different firmware")
-        else:
+        if not immutable.exists():
             shutil.copytree(folder, immutable)
     catalog_path.write_text(json.dumps(catalog, indent=2) + "\n")
     cards = []

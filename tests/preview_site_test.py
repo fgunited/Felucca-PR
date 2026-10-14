@@ -78,13 +78,32 @@ class Publication(unittest.TestCase):
             site.publish(self.incoming, self.state)
         self.assertEqual((self.state / "index.html").read_bytes(), original)
 
-    def test_immutable_build_cannot_change_firmware(self):
+    def test_rebuild_preserves_original_and_archives_exact_artifact(self):
         artifact(self.incoming, "precheck", ".", "a" * 40)
         site.publish(self.incoming, self.state)
         self.clear_incoming()
+        rebuilt = artifact(self.incoming, "precheck", ".", "a" * 40, package=b"changed")
+        site.publish(self.incoming, self.state)
+        original = self.state / "builds/precheck" / ("a" * 40)
+        variant = original / hashlib.sha256((rebuilt / "SHA256SUMS").read_bytes()).hexdigest()
+        self.assertEqual((original / "firmware/felucca-preview.fwsc").read_bytes(), b"firmware")
+        self.assertEqual((variant / "firmware/felucca-preview.fwsc").read_bytes(), b"changed")
+        site.verify_package(original)
+        site.verify_package(variant)
+        site.publish(self.incoming, self.state)
+        self.assertEqual(len(list(original.glob("*/build-info.json"))), 1)
+
+    def test_corrupted_archive_refuses_rebuild_before_replacing_site(self):
+        artifact(self.incoming, "precheck", ".", "a" * 40)
+        site.publish(self.incoming, self.state)
+        original = self.state / "builds/precheck" / ("a" * 40)
+        (original / "firmware/felucca-preview.fwsc").write_bytes(b"corrupt")
+        before = (self.state / "index.html").read_bytes()
+        self.clear_incoming()
         artifact(self.incoming, "precheck", ".", "a" * 40, package=b"changed")
-        with self.assertRaisesRegex(ValueError, "immutable"):
+        with self.assertRaisesRegex(ValueError, "Checksum mismatch"):
             site.publish(self.incoming, self.state)
+        self.assertEqual((self.state / "index.html").read_bytes(), before)
 
     def test_pins_and_paths_are_validated(self):
         config = self.root / "channels.json"

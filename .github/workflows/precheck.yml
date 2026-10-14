@@ -4,6 +4,11 @@ name: Tested firmware channels
 on:
   push:
     branches: [precheck]
+    paths-ignore:
+      - tools/preview_site.py
+      - tests/preview_site_test.py
+      - .github/workflows/precheck.yml
+      - .github/workflows/publication-recovery.yml
   workflow_dispatch:
 
 permissions:

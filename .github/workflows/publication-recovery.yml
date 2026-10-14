@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: GPL-3.0-only
+name: Publish validated preview artifacts
+
+on:
+  push:
+    branches: ['publication-recovery/run-*']
+
+permissions:
+  actions: read
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: felucca-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'fgunited/Felucca-PR'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check publisher and identify successful build run
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tests/preview_site_test.py
+          run_id="${GITHUB_REF_NAME#publication-recovery/run-}"
+          [[ "$run_id" =~ ^[0-9]+$ ]]
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs" > build-jobs.json
+          python3 - <<'PY'
+          import json
+          jobs = json.load(open('build-jobs.json'))['jobs']
+          required = [j for j in jobs if j['name'] == 'prepare' or j['name'].startswith('build (')]
+          assert len(required) >= 2 and all(j['conclusion'] == 'success' for j in required), 'Source builds did not pass'
+          PY
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.source.outputs.run_id }}
+          pattern: channel-*
+          path: incoming
+      - name: Verify artifacts match every pinned channel
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from tools.preview_site import verify_package
+          config = json.load(open('.github/preview-channels.json'))
+          expected = {c['id']: c['ref'] for c in config['channels']}
+          found = {}
+          for folder in Path('incoming').glob('channel-*'):
+              info = verify_package(folder)
+              assert info['source_repository'] == config['repository']
+              found[info['id']] = info['source_commit']
+          assert found == expected, 'Validated artifacts do not match the current pins'
+          PY
+      - name: Restore existing Pages channels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          git clone --depth 1 --branch gh-pages "https://github.com/$GITHUB_REPOSITORY.git" state
+      - name: Publish and preserve archived builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/preview_site.py publish incoming state
+          git -C state config user.name github-actions[bot]
+          git -C state config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C state add .
+          if ! git -C state diff --cached --quiet; then
+            git -C state commit -m "Publish validated artifacts from run ${{ steps.source.outputs.run_id }}"
+            git -C state push origin HEAD:gh-pages
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: state
+      - name: Deploy validated preview channels
+        id: deployment
+        uses: actions/deploy-pages@v4
