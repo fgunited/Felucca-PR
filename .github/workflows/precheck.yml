@@ -9,6 +9,7 @@ on:
       - tests/preview_site_test.py
       - .github/workflows/precheck.yml
       - .github/workflows/publication-recovery.yml
+      - .github/publication-recovery.json
   workflow_dispatch:
 
 permissions:

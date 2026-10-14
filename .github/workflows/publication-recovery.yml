@@ -3,7 +3,8 @@ name: Publish validated preview artifacts
 
 on:
   push:
-    branches: ['publication-recovery/run-*']
+    branches: [precheck]
+    paths: [.github/publication-recovery.json]
 
 permissions:
   actions: read
@@ -33,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 tests/preview_site_test.py
-          run_id="${GITHUB_REF_NAME#publication-recovery/run-}"
+          run_id="$(python3 -c "import json; print(json.load(open('.github/publication-recovery.json'))['run_id'])")"
           [[ "$run_id" =~ ^[0-9]+$ ]]
           gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs" > build-jobs.json
           python3 - <<'PY'
