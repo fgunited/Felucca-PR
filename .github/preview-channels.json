@@ -5,7 +5,7 @@
       "id": "precheck",
       "title": "Step Recording während der Wiedergabe · Upstream 1.6",
       "description": "Ein einzelner Upstream-Kandidat auf Felucca 1.6. SEQ > STEP, PLAY, SEQ halten und REC drücken. STEP REC schreibt am Eingabecursor; SEQ + REC schaltet wieder auf LIVE REC.",
-      "kind": "PR PRECHECK · HARDWARETEST AUSSTEHEND",
+      "kind": "PR PRECHECK · HARDWARETEST IM GESAMTBUILD BESTANDEN",
       "ref": "ea45684a77091050a4ff86396bcaf2d17173afef",
       "path": ".",
       "aliases": [
@@ -19,6 +19,15 @@
       "kind": "UPSTREAM-REFERENZ",
       "ref": "1727537624390cc3f9c7dff2456b43b3a8edb005",
       "path": "upstream",
+      "aliases": []
+    },
+    {
+      "id": "trs-clock-cc-load",
+      "title": "TRS MIDI Clock unter CC-Last · Upstream 1.6",
+      "description": "Isolierter Bugfix: TRS-MIDI wird auch während Audio-Berechnungen ausgelesen. Gleichmäßige Clock-Zeitstempel bei hoher CC-Last, ohne Custom-Sound-Features oder Änderungen an MIDI Learn.",
+      "kind": "BUGFIX PRECHECK · HARDWAREVERGLEICH AUSSTEHEND",
+      "ref": "ed341002ee25ceb58fcfa3d54ca45bd0cb734eee",
+      "path": "features/trs-clock-cc-load",
       "aliases": []
     }
   ]
