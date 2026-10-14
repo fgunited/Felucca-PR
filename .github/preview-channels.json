@@ -3,10 +3,10 @@
   "channels": [
     {
       "id": "precheck",
-      "title": "Step Recording während der Wiedergabe",
-      "description": "Ein einzelner Upstream-Kandidat. SEQ > STEP, PLAY, SEQ halten und REC drücken. STEP REC schreibt am Eingabecursor; SEQ + REC schaltet wieder auf LIVE REC.",
+      "title": "Step Recording während der Wiedergabe · Upstream 1.6",
+      "description": "Ein einzelner Upstream-Kandidat auf Felucca 1.6. SEQ > STEP, PLAY, SEQ halten und REC drücken. STEP REC schreibt am Eingabecursor; SEQ + REC schaltet wieder auf LIVE REC.",
       "kind": "PR PRECHECK · HARDWARETEST AUSSTEHEND",
-      "ref": "6ec3268bb7cc92a3edeb1080d2def765a103b768",
+      "ref": "ea45684a77091050a4ff86396bcaf2d17173afef",
       "path": ".",
       "aliases": [
         "features/step-record-playback"
