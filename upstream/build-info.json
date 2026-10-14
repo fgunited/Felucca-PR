@@ -10,8 +10,8 @@
   "source_commit": "1727537624390cc3f9c7dff2456b43b3a8edb005",
   "firmware_version": "v1.6",
   "preview_version": "1.6-upstream-17275376",
-  "built_at_utc": "2026-10-13T11:00:07+00:00",
-  "workflow_run": "38383710761",
+  "built_at_utc": "2026-10-14T05:50:06+00:00",
+  "workflow_run": "38517725052",
   "checks": "firmware build, target budgets, host suite and WebAssembly checks passed",
   "hardware_test": "pending",
   "package": "firmware/felucca-preview.fwsc"

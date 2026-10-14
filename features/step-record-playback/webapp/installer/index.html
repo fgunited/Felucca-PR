@@ -26,7 +26,7 @@
   pre { color: var(--dim); font-size: 12px; white-space: pre-wrap; margin-top: 16px; }
 </style>
 </head>
-<body><div style="position:relative;z-index:99999;background:#10151c;color:#edf2f7;padding:8px;font:13px system-ui"><a style="color:#8bd3ff" href="../../">Step Recording während der Wiedergabe</a> · 1.5.6-precheck-6ec3268b · 6ec3268bb7cc</div>
+<body><div style="position:relative;z-index:99999;background:#10151c;color:#edf2f7;padding:8px;font:13px system-ui"><a style="color:#8bd3ff" href="../../">Step Recording während der Wiedergabe · Upstream 1.6</a> · 1.6-precheck-ea45684a · ea45684a7709</div>
 <main>
   <button class="lang" id="lang"></button>
   <h1>Felucca</h1>
@@ -801,7 +801,7 @@ const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textCont
 const say = (txt) => { lastKey = null; $("status").textContent = txt; };
 const log = (t) => { $("log").textContent += t + "\n"; };
 let image = null;
-const meta = {"version": "1.5.6-precheck-6ec3268b", "product": "FM-1_900", "pkg": "../../firmware/felucca-1.5.6-precheck-6ec3268b.fwsc"};
+const meta = {"version": "1.6-precheck-ea45684a", "product": "FM-1_900", "pkg": "../../firmware/felucca-1.6-precheck-ea45684a.fwsc"};
 
 let writing = false, stock = null, stockFileEpoch = 0;
 const lockInstaller = (on) => { writing = on; $("go").disabled = on || !image; $("stock-go").disabled = on || !stock; $("stock-file").disabled = on; $("stock-recovery").disabled = on; };
