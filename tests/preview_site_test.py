@@ -17,14 +17,14 @@ site = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(site)
 
 
-def artifact(root, channel, path, sha, aliases=(), package=b"firmware"):
+def artifact(root, channel, path, sha, aliases=(), package=b"firmware", repository="fgunited/Felucca-PR"):
     folder = root / f"channel-{channel}"
     folder.mkdir(parents=True, exist_ok=True)
     files = {"index.html": b"<html><!-- CHANNELS --></html>",
              "webapp/try/felucca.wasm": b"wasm", "webapp/editor/index.html": b"editor",
              "webapp/installer/index.html": b"installer", "firmware/felucca-preview.fwsc": package}
     info = {"id": channel, "title": channel, "description": channel, "kind": "TEST",
-            "path": path, "aliases": list(aliases), "source_repository": "fgunited/Felucca-PR",
+            "path": path, "aliases": list(aliases), "source_repository": repository,
             "source_commit": sha, "package": "firmware/felucca-preview.fwsc"}
     files["build-info.json"] = json.dumps(info).encode()
     for name, content in files.items():
@@ -118,6 +118,62 @@ class Publication(unittest.TestCase):
         for bad in ["../main", ".git", "features/../main", "/features/morph", "webapp"]:
             with self.assertRaises(ValueError):
                 site.route(bad)
+
+    def pinned_config(self):
+        repository = os.environ.get("GITHUB_REPOSITORY", "fgunited/Felucca-PR")
+        artifact(self.incoming, "stable", ".", "a" * 40, repository=repository)
+        artifact(self.incoming, "morph", "features/morph", "b" * 40, repository=repository)
+        site.publish(self.incoming, self.state)
+        config = self.root / "channels.json"
+        config.write_text(json.dumps({"repository": repository, "channels": [
+            {"id": "stable", "path": ".", "ref": "a" * 40},
+            {"id": "morph", "path": "features/morph", "ref": "b" * 40},
+            {"id": "custom-next", "path": "custom-next", "ref": "@workflow"}]}))
+        return config
+
+    def test_published_pins_are_preserved_while_workflow_channel_is_built(self):
+        config = self.pinned_config()
+        before = {p.relative_to(self.state): p.read_bytes() for p in self.state.rglob("*") if p.is_file()}
+        selected = site.channels(config, "c" * 40, self.state)
+        self.assertEqual([(item["id"], item["ref"]) for item in selected], [("custom-next", "c" * 40)])
+        # Without a published state, first-time builds still include every pin.
+        self.assertEqual(len(site.channels(config, "c" * 40)), 3)
+        self.clear_incoming()
+        artifact(self.incoming, "custom-next", "custom-next", "c" * 40, package=b"new firmware")
+        site.publish(self.incoming, self.state)
+        for path, content in before.items():
+            if path.parts[0] in {"features", "builds", "firmware", "webapp"} or str(path) == "build-info.json":
+                self.assertEqual((self.state / path).read_bytes(), content, str(path))
+        site.verify_package(self.state)
+
+    def test_published_pin_reuses_exact_rebuilt_variant(self):
+        config = self.pinned_config()
+        self.clear_incoming()
+        artifact(self.incoming, "morph", "features/morph", "b" * 40, package=b"rebuilt",
+                 repository=os.environ.get("GITHUB_REPOSITORY", "fgunited/Felucca-PR"))
+        site.publish(self.incoming, self.state)
+        selected = site.channels(config, "c" * 40, self.state)
+        self.assertEqual([item["id"] for item in selected], ["custom-next"])
+
+    def test_published_pin_reuse_rejects_corrupt_archive(self):
+        config = self.pinned_config()
+        (self.state / "builds/morph" / ("b" * 40) / "firmware/felucca-preview.fwsc").write_bytes(b"corrupt")
+        with self.assertRaisesRegex(ValueError, "Checksum mismatch"):
+            site.channels(config, "c" * 40, self.state)
+
+    def test_published_pin_reuse_rejects_different_route_firmware(self):
+        config = self.pinned_config()
+        changed = artifact(self.root / "changed", "morph", "features/morph", "b" * 40, package=b"different",
+                           repository=os.environ.get("GITHUB_REPOSITORY", "fgunited/Felucca-PR"))
+        shutil.copytree(changed, self.state / "features/morph", dirs_exist_ok=True)
+        with self.assertRaisesRegex(ValueError, "differs from its archive"):
+            site.channels(config, "c" * 40, self.state)
+
+    def test_missing_pinned_archive_still_requires_build(self):
+        config = self.pinned_config()
+        shutil.rmtree(self.state / "builds/morph")
+        self.assertEqual([item["id"] for item in site.channels(config, "c" * 40, self.state)],
+                         ["morph", "custom-next"])
 
     def test_assembly_uses_the_source_editor_and_isolates_emulator_storage(self):
         source = self.root / "source"

@@ -29,9 +29,14 @@ jobs:
       - uses: actions/checkout@v6
       - name: Check publication integrity and channel configuration
         run: python3 tests/preview_site_test.py
+      - name: Read previously tested pinned channels
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          path: published
       - name: Resolve pinned source commits
         id: channels
-        run: python3 tools/preview_site.py matrix .github/preview-channels.json >> "$GITHUB_OUTPUT"
+        run: python3 tools/preview_site.py matrix .github/preview-channels.json --published published >> "$GITHUB_OUTPUT"
 
   build:
     needs: prepare
@@ -48,6 +53,7 @@ jobs:
         with:
           ref: ${{ matrix.ref }}
           path: source
+          submodules: recursive
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'

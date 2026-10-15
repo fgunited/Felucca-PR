@@ -23,10 +23,10 @@
     },
     {
       "id": "trs-clock-cc-load",
-      "title": "TRS MIDI Clock unter CC-Last · Upstream 1.6",
-      "description": "Isolierter Bugfix: TRS-MIDI wird auch während Audio-Berechnungen ausgelesen. Gleichmäßige Clock-Zeitstempel bei hoher CC-Last, ohne Custom-Sound-Features oder Änderungen an MIDI Learn.",
+      "title": "TRS MIDI Clock unter CC-Last · Upstream 1.6.1",
+      "description": "Isolierter Bugfix: TRS-MIDI wird auch während Audio-Berechnungen ausgelesen. Gleichmäßige Clock-Zeitstempel bei hoher CC-Last, ohne Custom-Sound-Features oder Änderungen an MIDI Learn. Auf Upstream 1.6.1 aktualisiert; Zweikern-Beta bleibt standardmäßig aus.",
       "kind": "BUGFIX PRECHECK · HARDWAREVERGLEICH AUSSTEHEND",
-      "ref": "ed341002ee25ceb58fcfa3d54ca45bd0cb734eee",
+      "ref": "f3290a70529dbe8c49e3a5981999c58a3fbcdcc5",
       "path": "features/trs-clock-cc-load",
       "aliases": []
     }

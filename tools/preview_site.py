@@ -27,7 +27,7 @@ def route(value):
     return value
 
 
-def channels(config, workflow_sha):
+def channels(config, workflow_sha, published=None):
     data = json.loads(Path(config).read_text())
     if data["repository"] not in REPOSITORIES:
         raise ValueError("Unexpected repository")
@@ -52,6 +52,42 @@ def channels(config, workflow_sha):
         # Pin every source, including feature candidates. Never build a moving ref.
         if not SHA.fullmatch(item["ref"]):
             raise ValueError("Source ref must be a full commit SHA or @workflow")
+        # A pinned channel already has a tested, immutable publication. Reuse it
+        # instead of rebuilding it with possibly changed build dependencies.
+        # Moving @workflow channels must always pass the complete build suite.
+        if published is not None and entry["ref"] != "@workflow":
+            immutable = Path(published) / "builds" / item["id"] / item["ref"]
+            if immutable.exists():
+                original = verify_package(immutable)
+                route_folder = Path(published) if item["path"] == "." else Path(published) / item["path"]
+                active_original = verify_package(route_folder)
+                # Rebuilt artifacts are archived by manifest hash; reuse the exact
+                # tested variant currently served, leaving the first archive intact.
+                package = original["package"]
+                if (immutable / package).read_bytes() != (route_folder / package).read_bytes():
+                    for variant in sorted(immutable.iterdir()):
+                        if variant.is_dir() and (variant / "build-info.json").is_file():
+                            candidate = verify_package(variant)
+                            if candidate == active_original and (variant / package).read_bytes() == (route_folder / package).read_bytes():
+                                immutable, original = variant, candidate
+                                break
+                expected = {"id": item["id"], "source_commit": item["ref"],
+                            "source_repository": data["repository"], "path": item["path"],
+                            "aliases": item.get("aliases", [])}
+                if any(original.get(key, [] if key == "aliases" else None) != value
+                       for key, value in expected.items()):
+                    raise ValueError("Published pinned channel identity or routes differ")
+                # The current routes must still serve that exact publication.
+                for path in [item["path"], *item.get("aliases", [])]:
+                    active_folder = Path(published) if path == "." else Path(published) / path
+                    active = verify_package(active_folder)
+                    if any(active.get(key) != original.get(key)
+                           for key in ["id", "source_repository", "source_commit", "package"]):
+                        raise ValueError("Published pinned channel route differs from its archive")
+                    package = original["package"]
+                    if (immutable / package).read_bytes() != (active_folder / package).read_bytes():
+                        raise ValueError("Published pinned channel firmware differs from its archive")
+                continue
         result.append(item)
     return result
 
@@ -234,6 +270,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     matrix = sub.add_parser("matrix")
     matrix.add_argument("config")
+    matrix.add_argument("--published", type=Path)
     assembly = sub.add_parser("assemble")
     assembly.add_argument("source")
     assembly.add_argument("output")
@@ -242,7 +279,7 @@ def main():
     publication.add_argument("state")
     args = parser.parse_args()
     if args.command == "matrix":
-        print("matrix=" + json.dumps({"include": channels(args.config, os.environ["GITHUB_SHA"])}, separators=(",", ":")))
+        print("matrix=" + json.dumps({"include": channels(args.config, os.environ["GITHUB_SHA"], args.published)}, separators=(",", ":")))
     elif args.command == "assemble":
         assemble(args.source, args.output, json.loads(os.environ["CHANNEL_JSON"]), os.environ["GITHUB_REPOSITORY"])
     else:
