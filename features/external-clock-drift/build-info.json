@@ -1,0 +1,18 @@
+{
+  "id": "external-clock-drift",
+  "title": "Externe MIDI-Clock ohne Langzeitdrift \u00b7 Upstream 1.6.1",
+  "description": "Isolierter Fix f\u00fcr Rundungsdrift in Sequencern und verlorene ARP-Restzeiten. F\u00fcnf 20-Minuten-Tests sowie Tempo-, Queue- und Wrap-Pr\u00fcfungen. Hardwaretest der \u00fcbernommenen Logik im vollst\u00e4ndigen Custom-Build vom Nutzer best\u00e4tigt.",
+  "kind": "BUGFIX PRECHECK \u00b7 HARDWARETEST IM CUSTOM-BUILD BESTANDEN",
+  "hardware_test": "reported-passed-in-custom-build",
+  "ref": "ebdf867d631b2e9dff0dc64880ee29d26855c111",
+  "path": "features/external-clock-drift",
+  "aliases": [],
+  "source_repository": "fgunited/Felucca-PR",
+  "source_commit": "ebdf867d631b2e9dff0dc64880ee29d26855c111",
+  "firmware_version": "v1.6.1",
+  "preview_version": "1.6.1-external-clock-drift-ebdf867d",
+  "built_at_utc": "2026-10-15T19:06:56+00:00",
+  "workflow_run": "38789288299",
+  "checks": "firmware build, target budgets, host suite and WebAssembly checks passed",
+  "package": "firmware/felucca-preview.fwsc"
+}
