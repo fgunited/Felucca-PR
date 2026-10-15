@@ -26,7 +26,7 @@
   pre { color: var(--dim); font-size: 12px; white-space: pre-wrap; margin-top: 16px; }
 </style>
 </head>
-<body><div style="position:relative;z-index:99999;background:#10151c;color:#edf2f7;padding:8px;font:13px system-ui"><a style="color:#8bd3ff" href="../../">TRS MIDI Clock unter CC-Last · Upstream 1.6</a> · 1.6-trs-clock-cc-load-ed341002 · ed341002ee25</div>
+<body><div style="position:relative;z-index:99999;background:#10151c;color:#edf2f7;padding:8px;font:13px system-ui"><a style="color:#8bd3ff" href="../../">TRS MIDI Clock unter CC-Last · Upstream 1.6.1</a> · 1.6.1-trs-clock-cc-load-f3290a70 · f3290a70529d</div>
 <main>
   <button class="lang" id="lang"></button>
   <h1>Felucca</h1>
@@ -801,7 +801,7 @@ const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textCont
 const say = (txt) => { lastKey = null; $("status").textContent = txt; };
 const log = (t) => { $("log").textContent += t + "\n"; };
 let image = null;
-const meta = {"version": "1.6-trs-clock-cc-load-ed341002", "product": "FM-1_900", "pkg": "../../firmware/felucca-1.6-trs-clock-cc-load-ed341002.fwsc"};
+const meta = {"version": "1.6.1-trs-clock-cc-load-f3290a70", "product": "FM-1_900", "pkg": "../../firmware/felucca-1.6.1-trs-clock-cc-load-f3290a70.fwsc"};
 
 let writing = false, stock = null, stockFileEpoch = 0;
 const lockInstaller = (on) => { writing = on; $("go").disabled = on || !image; $("stock-go").disabled = on || !stock; $("stock-file").disabled = on; $("stock-recovery").disabled = on; };
