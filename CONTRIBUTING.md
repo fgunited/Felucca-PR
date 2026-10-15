@@ -114,3 +114,17 @@ BYTE/FLOAT was prematurely implemented in Felucca-PR before being selected for u
   not implementations or selected official PRs. Develop those ports in Custom first. PHASE
   feedback must preserve FOLD; settle MORPH/feedback parameter-id/storage compatibility before
   implementing them. Do not silently reuse legacy FM values.
+
+### External-clock phase drift candidate — 15 October 2026
+
+Selected by the user for a focused upstream PR. Branch `fix/external-clock-drift-161`
+starts directly at upstream 1.6.1 (`a53ecf4`), without #258, Custom engines, manual
+resync or EXT START. The fractional-grid, tempo-scaling and ARP remainder functions
+are copied from hardware-tested Custom 18 (`98cca479`); direct code comparison
+checks the shared functions. The user explicitly confirmed the hardware test in
+this conversation on 15 October 2026. This is hardware evidence for the integrated
+Custom implementation, not a claim that the isolated package was separately flashed.
+The source suite exercises the isolated port. The identical long-run fixture fails
+on unmodified upstream 1.6.1 (about 109 ms at 120 BPM after 20 minutes) and passes
+with the port, including USB/TRS, jitter, interpolation, polymeter, tempo changes,
+queued clocks and counter wrap. Other PRs and tested previews stay pinned.

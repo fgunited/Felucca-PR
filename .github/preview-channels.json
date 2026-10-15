@@ -29,6 +29,16 @@
       "ref": "f3290a70529dbe8c49e3a5981999c58a3fbcdcc5",
       "path": "features/trs-clock-cc-load",
       "aliases": []
+    },
+    {
+      "id": "external-clock-drift",
+      "title": "Externe MIDI-Clock ohne Langzeitdrift · Upstream 1.6.1",
+      "description": "Isolierter Fix für Rundungsdrift in Sequencern und verlorene ARP-Restzeiten. Fünf 20-Minuten-Tests sowie Tempo-, Queue- und Wrap-Prüfungen. Hardwaretest der übernommenen Logik im vollständigen Custom-Build vom Nutzer bestätigt.",
+      "kind": "BUGFIX PRECHECK · HARDWARETEST IM CUSTOM-BUILD BESTANDEN",
+      "hardware_test": "reported-passed-in-custom-build",
+      "ref": "ebdf867d631b2e9dff0dc64880ee29d26855c111",
+      "path": "features/external-clock-drift",
+      "aliases": []
     }
   ]
 }

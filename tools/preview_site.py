@@ -134,7 +134,7 @@ def assemble(source, out, item, repository):
             "built_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "workflow_run": os.environ.get("GITHUB_RUN_ID"),
             "checks": "firmware build, target budgets, host suite and WebAssembly checks passed",
-            "hardware_test": "pending", "package": "firmware/felucca-preview.fwsc"}
+            "hardware_test": item.get("hardware_test", "pending"), "package": "firmware/felucca-preview.fwsc"}
     (out / "build-info.json").write_text(json.dumps(info, indent=2) + "\n")
     files = sorted(p for p in out.rglob("*") if p.is_file() and p.name != "SHA256SUMS")
     (out / "SHA256SUMS").write_text("".join(
